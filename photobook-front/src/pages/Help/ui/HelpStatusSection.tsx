@@ -16,11 +16,11 @@ export function HelpStatusSection() {
           Статус сервиса
         </p>
         <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
-          Прототип уже можно проверить
+          Beta уже можно проверить
         </h2>
         <p className="mt-5 text-lg leading-8 text-ink-700">
-          Мы показываем только реализованный путь и не выдаём тестовые условия
-          за предложение готового производства.
+          Мы показываем реализованный путь и отдельно отмечаем условия, которые
+          будут закреплены после выбора печатного партнёра.
         </p>
       </div>
 
@@ -28,7 +28,7 @@ export function HelpStatusSection() {
         <HelpStatusCard
           icon={<HiOutlineCheckCircle aria-hidden="true" className="size-6" />}
           items={HELP_AVAILABLE_NOW}
-          title="Доступно в прототипе"
+          title="Доступно в beta"
         />
         <HelpStatusCard
           icon={<HiOutlineClock aria-hidden="true" className="size-6" />}

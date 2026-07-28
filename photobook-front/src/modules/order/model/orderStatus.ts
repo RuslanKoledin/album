@@ -7,8 +7,8 @@ export const ORDER_PROGRESS_STEPS: ReadonlyArray<{
 }> = [
   {
     status: 'created',
-    label: 'Тестовая заявка создана',
-    description: 'Данные сохранены только для проверки сценария.',
+    label: 'Beta-заявка создана',
+    description: 'Данные сохранены для проверки сценария оформления.',
   },
   {
     status: 'awaiting_payment',

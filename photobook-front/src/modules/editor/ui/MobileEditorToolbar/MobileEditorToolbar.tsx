@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { FiBookOpen, FiGrid, FiImage, FiType } from 'react-icons/fi'
 
 import type {
@@ -14,15 +15,31 @@ interface MobileEditorToolbarProps {
   readonly onSelectTool: (tool: MobileEditorTool) => void
 }
 
+const mobileEditorToolbarQuery = '(max-width: 47.999rem)'
+
 export function MobileEditorToolbar({
   activeTool,
   availability,
   onSelectTool,
 }: MobileEditorToolbarProps) {
+  const [isMobileViewport, setIsMobileViewport] = useState(false)
+
+  useEffect(() => {
+    const query = window.matchMedia(mobileEditorToolbarQuery)
+    const syncViewport = () => setIsMobileViewport(query.matches)
+
+    syncViewport()
+    query.addEventListener('change', syncViewport)
+
+    return () => query.removeEventListener('change', syncViewport)
+  }, [])
+
+  if (!isMobileViewport) return null
+
   return (
     <nav
       aria-label="Инструменты редактора"
-      className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 gap-1 border-t border-border bg-surface/95 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-0.25rem_1rem_rgb(45_41_38_/_0.08)] backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 gap-1 border-t border-border bg-surface/95 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-0.25rem_1rem_rgb(45_41_38_/_0.08)] backdrop-blur"
     >
       <MobileToolButton
         active={activeTool === 'pages'}

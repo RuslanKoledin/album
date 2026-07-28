@@ -48,12 +48,17 @@ export function ApprovalPanel({
   onToggleChecklist,
   onWarningsAcknowledgedChange,
 }: ApprovalPanelProps) {
+  const checkedItemsCount = APPROVAL_CHECKLIST_ITEMS.filter(
+    ({ key }) => checklist[key],
+  ).length
+  const totalItemsCount = APPROVAL_CHECKLIST_ITEMS.length
+
   return (
     <aside className="min-w-0 rounded-4xl border border-border bg-surface p-6 shadow-surface lg:sticky lg:top-6">
       <LuShieldCheck aria-hidden="true" className="text-accent-600" size={28} />
       <h2 className="mt-4 font-serif text-3xl">Итоговая проверка макета</h2>
       <p className="text-ink-600 mt-2 text-sm leading-6">
-        Вы утверждаете сохранённую версию №{revisionNumber} для тестовой заявки.
+        Вы утверждаете сохранённую версию №{revisionNumber} для beta-заявки.
         После новых правок её нужно будет проверить и утвердить снова.
       </p>
 
@@ -68,6 +73,10 @@ export function ApprovalPanel({
 
       <fieldset className="mt-6 space-y-2">
         <legend className="mb-3 text-sm font-semibold">Я проверил макет</legend>
+        <p className="mb-2 text-xs leading-5 text-ink-500">
+          Отмечено {checkedItemsCount} из {totalItemsCount}. Кнопка оформления
+          откроется после всех обязательных пунктов.
+        </p>
         {APPROVAL_CHECKLIST_ITEMS.map(({ key, label }) => (
           <label
             className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl px-2 text-sm hover:bg-paper-100"
@@ -76,6 +85,7 @@ export function ApprovalPanel({
             <input
               checked={checklist[key]}
               className="size-5 accent-ink-950"
+              name={key}
               type="checkbox"
               onChange={() => onToggleChecklist(key)}
             />
@@ -122,7 +132,7 @@ export function ApprovalPanel({
         type="button"
         onClick={onApprove}
       >
-        {isSubmitting ? 'Проверяем макет…' : 'Утвердить для тестовой заявки'}
+        {isSubmitting ? 'Проверяем макет…' : 'Утвердить для beta-заявки'}
       </button>
       <p className="mt-3 text-center text-xs leading-5 text-ink-500">
         Утверждение фиксирует именно эту версию макета.

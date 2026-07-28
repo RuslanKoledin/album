@@ -57,7 +57,7 @@ export const createOrderHandler = http.post(
     if (result.kind === 'price_quote_invalid') {
       return createOrderErrorResponse(
         'PRICE_QUOTE_INVALID',
-        'Тестовый расчёт устарел. Обновите его и повторите заказ.',
+        'Beta-расчёт устарел. Обновите его и повторите заказ.',
         'mock-order-price-quote-409',
         409,
         { priceQuoteId: body.priceQuoteId },

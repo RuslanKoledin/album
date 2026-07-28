@@ -23,7 +23,7 @@ export const APPROVAL_CHECKLIST_ITEMS: ReadonlyArray<{
   { key: 'cropUnderstood', label: 'Кадрирование фотографий меня устраивает' },
   {
     key: 'readyForPrint',
-    label: 'Макет закончен и подходит для тестовой заявки',
+    label: 'Макет закончен и подходит для beta-заявки',
   },
 ]
 

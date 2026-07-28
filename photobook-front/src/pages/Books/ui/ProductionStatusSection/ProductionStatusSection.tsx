@@ -5,14 +5,14 @@ export function ProductionStatusSection() {
     <section className="page-container py-16 sm:py-20 lg:py-24">
       <div className="max-w-3xl">
         <p className="text-sm font-semibold tracking-[0.2em] text-accent-600 uppercase">
-          До открытия заказов
+          Перед публичным запуском
         </p>
         <h2 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
-          Что ещё должно быть подтверждено
+          Что фиксируем с печатным партнёром
         </h2>
         <p className="mt-5 text-lg leading-8 text-ink-700">
-          Эти данные появятся на странице после выбора печатного партнёра и
-          проверки физического образца.
+          Эти данные станут публичными после выбора типографии и проверки
+          физического образца.
         </p>
       </div>
 

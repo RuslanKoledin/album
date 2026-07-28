@@ -15,7 +15,7 @@ export function OrderDetails({ order }: OrderDetailsProps) {
       <h2 className="font-serif text-3xl">Детали заявки</h2>
       <dl className="mt-6 divide-y divide-border text-sm">
         <div className="flex justify-between gap-4 py-4">
-          <dt className="text-ink-500">Тестовый расчёт</dt>
+          <dt className="text-ink-500">Beta-расчёт</dt>
           <dd className="font-semibold">
             {formatKgsAmount(order.price.amountMinor)}
           </dd>
@@ -31,7 +31,7 @@ export function OrderDetails({ order }: OrderDetailsProps) {
         <div className="flex justify-between gap-4 py-4">
           <dt className="text-ink-500">Готовность</dt>
           <dd className="max-w-56 text-right font-semibold">
-            Не рассчитывается в тестовом режиме
+            Уточнит менеджер перед печатью
           </dd>
         </div>
       </dl>

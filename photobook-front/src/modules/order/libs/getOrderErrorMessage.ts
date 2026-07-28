@@ -10,7 +10,7 @@ export const getOrderErrorMessage = (error: unknown) => {
     return 'Сессия закончилась. Войдите снова и повторите заказ.'
   }
   if (code === 'PRICE_QUOTE_INVALID') {
-    return 'Тестовый расчёт изменился или устарел. Обновите его и повторите заказ.'
+    return 'Beta-расчёт изменился или устарел. Обновите его и повторите заказ.'
   }
   if (code === 'VALIDATION_FAILED') {
     return 'Проверьте контактные данные и способ получения.'

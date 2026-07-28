@@ -46,7 +46,7 @@ export function SpreadActions({
   const [isConfirmingRemoval, setIsConfirmingRemoval] = useState(false)
 
   return (
-    <div className="border-t border-border p-3 md:p-4">
+    <div className="sticky bottom-[calc(4rem+max(0.5rem,env(safe-area-inset-bottom)))] z-10 border-t border-border bg-paper-50 p-3 md:static md:p-4">
       <button
         className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-ink-950 px-3 text-sm font-semibold text-surface transition-colors hover:bg-accent-700 disabled:cursor-not-allowed disabled:opacity-40"
         disabled={!canAdd}

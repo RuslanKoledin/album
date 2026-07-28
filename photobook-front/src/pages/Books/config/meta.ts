@@ -4,8 +4,8 @@ import { createPublicPageMeta } from '@shared/seo'
 
 export const meta: MetaFunction = () =>
   createPublicPageMeta({
-    title: 'Формат фотокниги и тестовая конфигурация | Photobook',
+    title: 'Форматы фотокниги и beta-конфигурация | Photobook',
     description:
-      'Посмотрите референсный формат фотокниги Photobook. Тестовые параметры отделены от ещё не подтверждённых цены, материалов и сроков.',
+      'Посмотрите первый beta-формат Photobook и ближайшие форматы-кандидаты для проверки с типографией.',
     path: '/books',
   })

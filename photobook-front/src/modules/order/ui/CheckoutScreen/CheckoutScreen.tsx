@@ -88,7 +88,7 @@ export function CheckoutScreen({ projectId }: CheckoutScreenProps) {
       <CenteredMessagePage
         description="Считаем выбранную комплектацию и способ получения."
         eyebrow="Заказ"
-        title="Готовим тестовый расчёт"
+        title="Готовим beta-расчёт"
       />
     )
   }
@@ -125,7 +125,7 @@ export function CheckoutScreen({ projectId }: CheckoutScreenProps) {
             <LuArrowLeft aria-hidden="true" size={20} />
           </Link>
           <div>
-            <p className="text-xs text-ink-500">Тестовая заявка</p>
+            <p className="text-xs text-ink-500">Beta-заявка</p>
             <h1 className="text-sm font-semibold sm:text-base">
               Оформление книги
             </h1>
@@ -142,8 +142,9 @@ export function CheckoutScreen({ projectId }: CheckoutScreenProps) {
             Контакты и способ получения
           </h2>
           <p className="text-ink-600 mt-4 leading-7">
-            Создадим тестовую заявку без оплаты. Имя, телефон и выбранный способ
-            получения сохранятся в её деталях.
+            Создадим beta-заявку без оплаты. Имя, телефон и выбранный способ
+            получения сохранятся в деталях, а финальные условия подтвердит
+            менеджер.
           </p>
         </div>
 

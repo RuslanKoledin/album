@@ -99,8 +99,8 @@ export function CreateDetailsStep({
       <div className="mt-8 rounded-3xl border border-border bg-surface p-5 sm:p-6">
         <p className="text-sm font-semibold">Количество разворотов</p>
         <p className="mt-2 text-sm leading-6 text-ink-500">
-          Сейчас доступен тестовый диапазон. Точные параметры будут подтверждены
-          перед запуском печати.
+          Сейчас доступен beta-диапазон. Точные параметры подтвердим перед
+          запуском печати.
         </p>
         <div className="mt-5 flex items-center gap-4">
           <button
@@ -128,7 +128,7 @@ export function CreateDetailsStep({
       </div>
 
       <div className="mt-6 rounded-3xl bg-ink-950 p-6 text-surface">
-        <p className="text-sm text-paper-200">Тестовая ориентировочная цена</p>
+        <p className="text-sm text-paper-200">Beta-расчёт стоимости</p>
         <p className="mt-2 font-serif text-4xl">
           {isPriceLoading
             ? 'Считаем…'
@@ -137,8 +137,8 @@ export function CreateDetailsStep({
               : 'Расчёт недоступен'}
         </p>
         <p className="mt-3 max-w-xl text-sm leading-6 text-paper-200">
-          Это предварительный тестовый расчёт, не оферта. Итоговую стоимость
-          подтвердим перед открытием реальных заказов.
+          Это предварительный расчёт, не оферта. Итоговую стоимость подтвердим
+          после выбора печатного партнёра.
         </p>
         {isPriceError && (
           <button

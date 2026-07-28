@@ -80,7 +80,7 @@ export function OrderStatusScreen({ orderId }: OrderStatusScreenProps) {
         <div className="max-w-3xl">
           <div>
             <p className="text-xs font-semibold tracking-[0.18em] text-accent-600 uppercase">
-              Тестовая заявка {formatOrderNumber(order.number)}
+              Beta-заявка {formatOrderNumber(order.number)}
             </p>
             <h1 className="mt-3 font-serif text-4xl sm:text-5xl">
               {currentStep?.label ?? 'Статус заявки'}
@@ -95,8 +95,9 @@ export function OrderStatusScreen({ orderId }: OrderStatusScreenProps) {
         </div>
 
         <div className="mt-8 rounded-2xl bg-warning-soft p-4 text-sm leading-6 text-ink-700">
-          Это демонстрационная заявка. Её статус не изменится, менеджер не
-          свяжется, оплата и производство не запускаются.
+          Это beta-заявка без оплаты. Сейчас она фиксирует сценарий оформления;
+          реальный контакт менеджера и запуск производства появятся после выбора
+          печатного партнёра.
         </div>
 
         <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_23rem]">

@@ -36,8 +36,8 @@ export const HOME_CATEGORY_EXAMPLES = [
 
 export const REFERENCE_PRODUCT_FEATURES = [
   'Квадратный формат 20 × 20 см',
-  'Твёрдая обложка в двух тестовых вариантах',
-  'До трёх разворотов в текущем прототипе',
+  'Твёрдая обложка в двух beta-вариантах',
+  '1–3 разворота для быстрой проверки сценария',
 ] as const
 
 export const HOME_DEMO_PHOTOS = {

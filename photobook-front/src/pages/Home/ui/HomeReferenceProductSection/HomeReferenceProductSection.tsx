@@ -8,14 +8,14 @@ export function HomeReferenceProductSection() {
       <div className="page-container grid items-center gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-20">
         <div>
           <p className="text-sm font-semibold tracking-[0.2em] text-accent-100 uppercase">
-            Один честный старт
+            Beta-формат для проверки
           </p>
           <h2 className="mt-4 max-w-2xl font-serif text-4xl leading-tight sm:text-5xl">
-            Сначала проверяем один формат, а не показываем ложное изобилие
+            Запускаем понятный формат и готовим расширение каталога
           </h2>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-paper-200">
-            Фотокнига в твёрдом переплёте — тестовый формат, на котором мы
-            проверяем весь путь от шаблона до редактирования.
+            Фотокнига в твёрдом переплёте — первый формат, на котором проверяем
+            путь от шаблона до редактирования и заявки.
           </p>
 
           <ul className="mt-8 grid gap-3 text-sm text-paper-200 sm:grid-cols-3">
@@ -29,14 +29,15 @@ export function HomeReferenceProductSection() {
 
         <div className="rounded-[2rem] bg-surface p-7 text-ink-950 sm:p-9">
           <p className="inline-flex rounded-full bg-warning-soft px-3 py-1 text-xs font-semibold text-warning">
-            Тестовая конфигурация
+            Закрытая beta
           </p>
           <h3 className="mt-6 font-serif text-3xl">
-            Публичная цена ещё не подтверждена
+            Сейчас проверяем производственный контур
           </h3>
           <p className="mt-4 leading-7 text-ink-700">
-            В конструкторе есть только демонстрационный расчёт для проверки
-            сценария. Материалы, цена и сроки появятся после контрольной печати.
+            Конструктор уже позволяет собрать макет и отправить beta-заявку.
+            Материалы, цена и сроки будут зафиксированы после контрольной печати
+            у выбранной типографии.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link

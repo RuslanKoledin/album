@@ -28,7 +28,7 @@ export function AuthPageLayout({
           </h2>
           <p className="mt-5 leading-7 text-ink-700">
             После входа вы сможете возвращаться к сохранённым проектам и
-            тестовым заявкам с одного аккаунта.
+            beta-заявкам с одного аккаунта.
           </p>
         </div>
         <div className="flex items-start gap-3 rounded-2xl bg-surface/55 p-4 text-sm leading-6 text-ink-700">

@@ -30,7 +30,7 @@ export function OrderSummary({
   return (
     <aside className="rounded-4xl border border-border bg-surface p-6 shadow-surface lg:sticky lg:top-6">
       <p className="text-xs font-semibold tracking-[0.16em] text-accent-600 uppercase">
-        Тестовая заявка
+        Beta-заявка
       </p>
       <p className="mt-3 text-sm text-ink-500">Проект</p>
       <h2 className="mt-1 font-serif text-3xl">{projectTitle}</h2>
@@ -61,12 +61,12 @@ export function OrderSummary({
         </div>
       </div>
       <div className="mt-5 flex items-end justify-between gap-4">
-        <span className="text-ink-600 text-sm">Тестовый расчёт</span>
+        <span className="text-ink-600 text-sm">Beta-расчёт</span>
         <strong className="text-xl">{formatKgsAmount(priceMinor)}</strong>
       </div>
       <p className="mt-3 text-xs leading-5 text-warning">
-        Не оферта. Финальная цена и срок появятся только после производственного
-        подтверждения.
+        Не оферта. Финальную цену, срок и способ оплаты подтвердит менеджер
+        перед запуском печати.
       </p>
     </aside>
   )

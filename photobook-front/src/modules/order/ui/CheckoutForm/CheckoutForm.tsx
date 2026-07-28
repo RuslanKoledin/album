@@ -21,6 +21,11 @@ interface CheckoutFormProps {
 const fieldClassName =
   'mt-2 min-h-12 w-full rounded-xl border border-control-border bg-surface px-4 text-base outline-none focus:border-ink-950'
 
+const deliveryOptions = [
+  ['pickup', 'Самовывоз', 'Адрес точки добавим после выбора партнёра'],
+  ['courier', 'Курьер', 'По Бишкеку после согласования заявки'],
+] as const
+
 export function CheckoutForm({
   canSubmit,
   errorMessage,
@@ -48,13 +53,21 @@ export function CheckoutForm({
         <label className="text-sm font-semibold">
           Имя
           <input
+            aria-describedby={errors.name ? 'checkout-name-error' : undefined}
+            aria-invalid={Boolean(errors.name)}
             autoComplete="name"
             className={fieldClassName}
+            id="checkout-name"
+            name="name"
+            type="text"
             value={form.name}
             onChange={(event) => onChange('name', event.currentTarget.value)}
           />
           {errors.name && (
-            <span className="mt-2 block text-xs text-danger">
+            <span
+              className="mt-2 block text-xs text-danger"
+              id="checkout-name-error"
+            >
               {errors.name}
             </span>
           )}
@@ -62,15 +75,23 @@ export function CheckoutForm({
         <label className="text-sm font-semibold">
           Телефон
           <input
+            aria-describedby={errors.phone ? 'checkout-phone-error' : undefined}
+            aria-invalid={Boolean(errors.phone)}
             autoComplete="tel"
             className={fieldClassName}
+            id="checkout-phone"
             inputMode="tel"
+            name="phone"
             placeholder="+996 555 123 456"
+            type="tel"
             value={form.phone}
             onChange={(event) => onChange('phone', event.currentTarget.value)}
           />
           {errors.phone && (
-            <span className="mt-2 block text-xs text-danger">
+            <span
+              className="mt-2 block text-xs text-danger"
+              id="checkout-phone-error"
+            >
               {errors.phone}
             </span>
           )}
@@ -82,12 +103,7 @@ export function CheckoutForm({
           Как получить в Бишкеке
         </legend>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          {(
-            [
-              ['pickup', 'Самовывоз', 'Точка ещё не определена'],
-              ['courier', 'Курьер', 'Только в пределах Бишкека'],
-            ] as const
-          ).map(([method, label, description]) => (
+          {deliveryOptions.map(([method, label, description]) => (
             <label
               className="flex min-h-20 cursor-pointer gap-3 rounded-2xl border border-control-border p-4 has-checked:border-ink-950 has-checked:bg-paper-100"
               key={method}
@@ -95,8 +111,10 @@ export function CheckoutForm({
               <input
                 checked={form.deliveryMethod === method}
                 className="mt-1 size-5 accent-ink-950"
+                id={`checkout-delivery-${method}`}
                 name="delivery"
                 type="radio"
+                value={method}
                 onChange={() => setDeliveryMethod(method)}
               />
               <span>
@@ -114,13 +132,23 @@ export function CheckoutForm({
         <label className="mt-5 block text-sm font-semibold">
           Адрес в Бишкеке
           <input
+            aria-describedby={
+              errors.address ? 'checkout-address-error' : undefined
+            }
+            aria-invalid={Boolean(errors.address)}
             autoComplete="street-address"
             className={fieldClassName}
+            id="checkout-address"
+            name="address"
+            type="text"
             value={form.address}
             onChange={(event) => onChange('address', event.currentTarget.value)}
           />
           {errors.address && (
-            <span className="mt-2 block text-xs text-danger">
+            <span
+              className="mt-2 block text-xs text-danger"
+              id="checkout-address-error"
+            >
               {errors.address}
             </span>
           )}
@@ -132,7 +160,9 @@ export function CheckoutForm({
         <span className="font-normal text-ink-500">(необязательно)</span>
         <textarea
           className={`${fieldClassName} min-h-28 resize-y py-3`}
+          id="checkout-comment"
           maxLength={500}
+          name="comment"
           value={form.comment}
           onChange={(event) => onChange('comment', event.currentTarget.value)}
         />
@@ -143,6 +173,7 @@ export function CheckoutForm({
           <input
             checked={form.approvedLayoutConfirmed}
             className="mt-0.5 size-5 shrink-0 accent-ink-950"
+            name="approvedLayoutConfirmed"
             type="checkbox"
             onChange={(event) =>
               onChange('approvedLayoutConfirmed', event.currentTarget.checked)
@@ -154,6 +185,7 @@ export function CheckoutForm({
           <input
             checked={form.mockConditionsAcknowledged}
             className="mt-0.5 size-5 shrink-0 accent-ink-950"
+            name="mockConditionsAcknowledged"
             type="checkbox"
             onChange={(event) =>
               onChange(
@@ -162,8 +194,8 @@ export function CheckoutForm({
               )
             }
           />
-          Понимаю, что это тестовая заявка: цена, сроки и оплата ещё не
-          подтверждены производством.
+          Понимаю, что это beta-заявка: менеджер подтвердит цену, срок и способ
+          оплаты перед запуском печати.
         </label>
       </div>
 
@@ -182,7 +214,7 @@ export function CheckoutForm({
         disabled={!canSubmit}
         type="submit"
       >
-        {isSubmitting ? 'Создаём заявку…' : 'Создать тестовую заявку'}
+        {isSubmitting ? 'Создаём заявку…' : 'Создать beta-заявку'}
       </button>
     </form>
   )

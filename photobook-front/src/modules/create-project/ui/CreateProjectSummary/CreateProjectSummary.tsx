@@ -95,7 +95,7 @@ export function CreateProjectSummary({
           </p>
           <p className="mt-3 flex items-start gap-2 text-xs leading-5 text-ink-500">
             <FiInfo aria-hidden="true" className="mt-0.5 shrink-0" />
-            Тестовый расчёт только для проверки интерфейса. Публичная цена
+            Beta-расчёт помогает проверить оформление заявки. Публичная цена
             появится после контрольной печати.
           </p>
         </div>

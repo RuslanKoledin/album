@@ -2,6 +2,7 @@ import { Link } from 'react-router'
 
 import {
   FORMAT_AVAILABLE_FEATURES,
+  FORMAT_CANDIDATE_PRODUCTS,
   REFERENCE_FORMAT_FACTS,
 } from '@pages/Books/config'
 
@@ -15,15 +16,15 @@ export function ReferenceFormatSection() {
 
         <div>
           <p className="inline-flex rounded-full bg-warning-soft px-3 py-1 text-xs font-semibold text-warning">
-            Тестовая конфигурация
+            Закрытая beta
           </p>
           <h2 className="mt-5 font-serif text-4xl sm:text-5xl">
             Фотокнига в твёрдом переплёте
           </h2>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-ink-700">
-            Это единственный формат текущего тестового пути. Его параметры
-            позволяют проверить выбор шаблона, добавление фотографий и ручное
-            редактирование без лишнего каталога.
+            Это первый формат текущего пути. Его параметры позволяют проверить
+            выбор шаблона, добавление фотографий и ручное редактирование до
+            расширения каталога.
           </p>
 
           <dl className="mt-8 grid grid-cols-2 gap-x-5 gap-y-6 sm:grid-cols-4">
@@ -46,6 +47,26 @@ export function ReferenceFormatSection() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          <div className="mt-6">
+            <h3 className="font-semibold">Следующие форматы-кандидаты</h3>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {FORMAT_CANDIDATE_PRODUCTS.map((product) => (
+                <article
+                  className="rounded-2xl border border-border bg-surface p-4"
+                  key={product.title}
+                >
+                  <p className="text-xs font-semibold tracking-[0.12em] text-accent-600 uppercase">
+                    {product.status}
+                  </p>
+                  <h4 className="mt-2 font-semibold">{product.title}</h4>
+                  <p className="text-ink-600 mt-2 text-sm leading-6">
+                    {product.description}
+                  </p>
+                </article>
+              ))}
+            </div>
           </div>
 
           <Link
