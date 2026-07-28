@@ -15,7 +15,7 @@
 3. Для порядка этапов открыть
    `photobook-front/docs/planning/roadmap.md`, затем только релевантный раздел
    backlog или backend-документации.
-4. Для продуктового scope свериться с `photobook-final-spec-and-plan.md`.
+4. Для продуктового scope свериться с `docs/product/spec-and-plan.md`.
 5. Проверить существующий код, контракт и принятый pattern до добавления новой
    зависимости или архитектурного решения.
 
@@ -25,7 +25,7 @@
 
 ## Источники истины
 
-- Продукт и границы MVP: `photobook-final-spec-and-plan.md`.
+- Продукт и границы MVP: `docs/product/spec-and-plan.md`.
 - Порядок milestone и gates:
   `photobook-front/docs/planning/roadmap.md`.
 - Детальный frontend scope и текущая точка:

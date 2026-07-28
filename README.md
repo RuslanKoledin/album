@@ -14,9 +14,8 @@
   API-контракты;
 - `photobook-back` — NestJS modular monolith, PostgreSQL и S3-compatible
   storage;
-- `docs` — общая карта документации и процесс проверки крупных задач;
-- `photobook-final-spec-and-plan.md` — продуктовая концепция и итоговое ТЗ;
-- `competitor-analysis-mixbook.md` — анализ Mixbook.
+- `docs` — продуктовая концепция, исследования, общая карта документации и
+  процесс проверки крупных задач.
 
 Frontend и backend являются отдельными pnpm-проектами со своими lock-файлами.
 Git-репозиторий один — в корне `photobook`.

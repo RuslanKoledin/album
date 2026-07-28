@@ -1648,7 +1648,7 @@ Frontend и backend разрабатываются параллельно по c
 
 Детальное backend ТЗ, endpoint-реестр, примеры DTO, безопасность и синхронный
 roadmap находятся в
-[`photobook-front/docs/engineering/backend.md`](photobook-front/docs/engineering/backend.md).
+[`photobook-front/docs/engineering/backend.md`](../../photobook-front/docs/engineering/backend.md).
 
 ### 26.3. Объектное хранилище
 
@@ -1873,7 +1873,7 @@ print proof, минимальная модель, walking skeleton, ранняя
 
 Главный порядок delivery, business/print gates и критерии продолжения находятся
 в
-[`photobook-front/docs/planning/roadmap.md`](photobook-front/docs/planning/roadmap.md).
+[`photobook-front/docs/planning/roadmap.md`](../../photobook-front/docs/planning/roadmap.md).
 
 ### Этап 0. Производственная проверка
 

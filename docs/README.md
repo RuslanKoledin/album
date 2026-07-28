@@ -8,8 +8,8 @@
 
 | Область        | Источник                                                                      | Назначение                                              |
 | -------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------- |
-| Продукт        | [`photobook-final-spec-and-plan.md`](../photobook-final-spec-and-plan.md)     | Концепция, рынок Бишкека, MVP и отложенные возможности  |
-| Исследование   | [`competitor-analysis-mixbook.md`](../competitor-analysis-mixbook.md)         | Анализ Mixbook без автоматического переноса его scope   |
+| Продукт        | [`spec-and-plan.md`](product/spec-and-plan.md)                                | Концепция, рынок Бишкека, MVP и отложенные возможности  |
+| Исследование   | [`mixbook.md`](research/mixbook.md)                                           | Анализ Mixbook без автоматического переноса его scope   |
 | Планирование   | [`roadmap.md`](../photobook-front/docs/planning/roadmap.md)                   | Единственный интегрированный порядок milestone и gates  |
 | Frontend scope | [`frontend-backlog.md`](../photobook-front/docs/planning/frontend-backlog.md) | Реализованные возможности и следующая frontend-точка    |
 | Frontend       | [`frontend docs`](../photobook-front/docs/README.md)                          | Архитектура, правила, gates и API                       |

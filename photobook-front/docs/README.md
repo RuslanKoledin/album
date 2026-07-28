@@ -6,17 +6,17 @@
 
 ## Карта
 
-| Раздел      | Документ                                              | Назначение                                                                             |
-| ----------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Engineering | [Frontend rules](engineering/frontend.md)             | Единственный источник frontend-архитектуры, code quality, testing и Definition of Done |
-| Engineering | [Backend requirements](engineering/backend.md)        | Backend-архитектура, безопасность, endpoints, jobs и интеграция                        |
-| Engineering | [Backend stack](engineering/backend-stack.md)         | Provisional B0 stack, deployment units и environment boundaries                        |
-| Planning    | [Delivery roadmap](planning/roadmap.md)               | Порядок milestone, gates и бизнес-решения                                              |
-| Planning    | [Frontend backlog](planning/frontend-backlog.md)      | Детальный capability checklist и текущая точка продолжения                             |
-| Gates       | [Gate execution](gates/README.md)                     | Статусы, процедуры и доказательства внешних проверок                                   |
-| API         | [API contracts](api/README.md)                        | OpenAPI, JSON Schema, examples и статусы контрактов                                    |
-| API         | [Backend handoff](api/backend-handoff.md)             | Матрица приёмки первой contract-группы                                                 |
-| Product     | [Итоговое ТЗ](../../photobook-final-spec-and-plan.md) | Продукт, рынок, MVP и долгосрочная концепция                                           |
+| Раздел      | Документ                                           | Назначение                                                                             |
+| ----------- | -------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Engineering | [Frontend rules](engineering/frontend.md)          | Единственный источник frontend-архитектуры, code quality, testing и Definition of Done |
+| Engineering | [Backend requirements](engineering/backend.md)     | Backend-архитектура, безопасность, endpoints, jobs и интеграция                        |
+| Engineering | [Backend stack](engineering/backend-stack.md)      | Provisional B0 stack, deployment units и environment boundaries                        |
+| Planning    | [Delivery roadmap](planning/roadmap.md)            | Порядок milestone, gates и бизнес-решения                                              |
+| Planning    | [Frontend backlog](planning/frontend-backlog.md)   | Детальный capability checklist и текущая точка продолжения                             |
+| Gates       | [Gate execution](gates/README.md)                  | Статусы, процедуры и доказательства внешних проверок                                   |
+| API         | [API contracts](api/README.md)                     | OpenAPI, JSON Schema, examples и статусы контрактов                                    |
+| API         | [Backend handoff](api/backend-handoff.md)          | Матрица приёмки первой contract-группы                                                 |
+| Product     | [Итоговое ТЗ](../../docs/product/spec-and-plan.md) | Продукт, рынок, MVP и долгосрочная концепция                                           |
 
 ## Что читать по задаче
 
