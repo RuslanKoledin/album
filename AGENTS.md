@@ -1,180 +1,95 @@
-# AGENTS.md
+# Photobook Monorepo Agent Instructions
 
-## 1. Mission
+Эти правила применяются ко всему репозиторию. Явное решение пользователя имеет
+приоритет. Инструкции в `photobook-front/AGENTS.md` и
+`photobook-back/AGENTS.md` дополняют этот файл для соответствующей части
+проекта.
 
-Build the photobook MVP incrementally and verifiably. Work only on the single active task in `tasks/current/`. The master specification is a reference, not a request to implement the whole product.
+## Перед каждой задачей
 
-## 2. Mandatory reading order
+1. Прочитать корневой `README.md` и этот файл.
+2. Определить область задачи:
+   - frontend — следовать `photobook-front/AGENTS.md`;
+   - backend — следовать `photobook-back/AGENTS.md`;
+   - общий пользовательский flow, API или контракт — прочитать оба файла.
+3. Для порядка этапов открыть
+   `photobook-front/docs/planning/roadmap.md`, затем только релевантный раздел
+   backlog или backend-документации.
+4. Для продуктового scope свериться с `photobook-final-spec-and-plan.md`.
+5. Проверить существующий код, контракт и принятый pattern до добавления новой
+   зависимости или архитектурного решения.
 
-Before changing files:
+Не нужно создавать task-файл, отдельную ветку или полный набор evidence для
+каждого небольшого изменения. Расширенный процесс из `docs/process` применяется
+к крупным, рискованным или явно вынесенным на независимую приёмку задачам.
 
-1. Read this `AGENTS.md`.
-2. Read the active task file in `tasks/current/`.
-3. Read only the specification sections and requirement IDs referenced by that task.
-4. Read relevant ADRs and `docs/decisions/DECISIONS.md`.
-5. Inspect existing code, tests, migrations, and public contracts.
+## Источники истины
 
-Do not scan unrelated parts of the repository unless needed to understand a dependency or prevent a regression.
+- Продукт и границы MVP: `photobook-final-spec-and-plan.md`.
+- Порядок milestone и gates:
+  `photobook-front/docs/planning/roadmap.md`.
+- Детальный frontend scope и текущая точка:
+  `photobook-front/docs/planning/frontend-backlog.md`.
+- Frontend engineering:
+  `photobook-front/docs/engineering/frontend.md`.
+- Backend scope и текущая точка:
+  `photobook-front/docs/engineering/backend.md`.
+- Wire-контракты: `photobook-front/docs/api`.
+- Backend-решения: `photobook-back/docs/adr`.
 
-## 3. Task scope rules
+Не создавать параллельные roadmap, status board, DTO или копию инженерных
+правил. При противоречии остановить затронутую часть работы, зафиксировать
+конкретное расхождение и запросить решение только тогда, когда его нельзя
+получить из кода и действующих документов.
 
-- Implement only the active task.
-- Do not start another backlog item.
-- Do not perform opportunistic refactors outside the scope.
-- Do not change product behavior that is not required by the task.
-- Do not resolve a `TBD` by guessing.
-- Do not use Mixbook behavior as a replacement for this specification.
-- If a requirement is ambiguous, contradictory, impossible, unsafe, or depends on an unresolved decision, set the task to `BLOCKED` and document the exact blocker.
+## Выполнение
 
-## 4. Status authority
+- Брать минимальный законченный срез из текущего milestone.
+- Не расширять scope рефакторингом, новой инфраструктурой или соседней
+  функцией без необходимости.
+- Не угадывать production-значения, провайдеров, цены и параметры печати.
+- Mocks допустимы на согласованном mock-first этапе, но должны быть явно
+  отделены от production-данных и не выдаваться за реальную интеграцию.
+- AI не внедряется до готовности ручного конструктора и производственного
+  контура. Будущий AI использует тот же `BookDocument`, конфиги и типизированные
+  команды, что и ручной редактор.
+- Frontend и backend меняют общий HTTP/JSON контракт согласованно: сначала
+  нормативный артефакт, затем consumers, mocks и реализация.
+- Не изменять чужие несвязанные правки и не выполнять разрушительные Git- или
+  filesystem-операции без явного запроса.
 
-Allowed Codex status transitions:
+## Качество и проверки
 
-- `READY -> IN_PROGRESS`
-- `IN_PROGRESS -> BLOCKED`
-- `IN_PROGRESS -> IMPLEMENTED`
+- Тестировать по риску и на самом низком достаточном уровне.
+- Не добавлять тесты для статичной разметки, barrels, очевидного config или
+  простого wiring без отдельного риска.
+- Bug fix по возможности получает узкий regression test.
+- Для изменённой части запускать targeted checks; полный `pnpm check` нужен
+  перед milestone, handoff или при широком изменении.
+- UI проверять в браузере на релевантных desktop/mobile размерах.
+- Не объявлять непройденную или mock-only интеграцию готовой.
+- Сообщать точные выполненные команды, реальные ограничения и непроверенные
+  внешние зависимости без выдуманного evidence.
 
-Codex must never set:
+## Безопасность и данные
 
-- `VERIFIED`
-- `DONE`
+- Не коммитить секреты, `.env`, пользовательские фотографии, production media,
+  локальные caches или сгенерированные зависимости.
+- Не логировать OTP, cookies, authorization headers, signed URLs, телефоны или
+  метаданные пользовательских фотографий.
+- Авторизация, ownership, цена, preflight и состояние заказа определяются
+  сервером.
+- Исторические revisions, approvals, print profiles, quotes и orders не
+  изменяются задним числом.
+- Внешние и AI-данные считаются недоверенными и проходят schema/domain
+  validation.
 
-These statuses require human review.
+## Документация и завершение
 
-## 5. Required plan before implementation
-
-For every task, first update its `Implementation plan` section with:
-
-- affected modules;
-- data or API contract changes;
-- migrations;
-- tests to add or update;
-- security/privacy impact;
-- rollback considerations.
-
-For non-trivial work, share the plan before broad changes. Keep the plan tied to acceptance criteria.
-
-## 6. Completion requirements
-
-A task may be set to `IMPLEMENTED` only when all of the following are true:
-
-- every in-scope acceptance criterion has evidence;
-- required tests were created and passed;
-- lint/typecheck/build passed when relevant;
-- migrations were tested forward and backward when rollback is supported;
-- no unresolved placeholder, fake implementation, disabled test, or hidden exception remains;
-- API/schema documentation is updated;
-- security and privacy checks were considered;
-- changed files and commands are listed in the task file;
-- known limitations are explicit.
-
-If a required check cannot be run, the task is not complete. Record the limitation and use `BLOCKED` or leave `IN_PROGRESS`.
-
-## 7. Evidence rules
-
-Do not write only “tests passed”. Record:
-
-- exact command;
-- exit status;
-- short result summary;
-- relevant screenshot or artifact path for UI/render work;
-- manual steps that still require human verification.
-
-Never fabricate command output, screenshots, coverage, performance numbers, or production results.
-
-## 8. Testing expectations
-
-- Add tests close to the behavior being changed.
-- Prefer behavior and contract tests over implementation-detail tests.
-- Every bug fix must include a regression test when technically possible.
-- Do not remove or weaken tests to make a task pass.
-- Do not change expected snapshots without explaining why the product output changed.
-- UI tasks require responsive checks and at least one narrow/mobile viewport.
-- Renderer tasks require deterministic fixtures and visual or geometry comparison.
-- Payment and webhook tasks require idempotency tests.
-- Permission changes require positive and negative authorization tests.
-- Upload tasks require retry, resume, invalid file, and ownership tests.
-
-## 9. Security baseline
-
-- Never hardcode secrets, passwords, tokens, private keys, or production endpoints.
-- Never create fallback secrets or default credentials.
-- Never print secrets or user photographs in logs.
-- Validate authorization server-side for every project, asset, order, and admin action.
-- Validate file content, not only file extension.
-- Use cryptographically secure identifiers and randomness.
-- Do not disable CSRF, TLS verification, authorization, validation, or security headers as a workaround.
-- Do not add insecure HTTP fallbacks to production configuration.
-- Do not use empty or ignored exception handlers.
-- Do not commit `.env`, uploaded files, generated PDFs, credentials, or customer data.
-
-## 10. Data and migration rules
-
-- Schema changes require an explicit migration.
-- Migrations must be safe for the expected dataset and deployment model.
-- Avoid destructive changes without a documented backfill and rollback/restore plan.
-- Persist immutable snapshots for approved documents, order prices, product versions, and payment-relevant data.
-- Do not mutate historical orders when catalog data changes.
-- Preserve schema and renderer version information in book documents.
-
-## 11. API rules
-
-- Define request, response, error, auth, and idempotency behavior.
-- Do not silently change an existing contract.
-- Update OpenAPI/schema fixtures when a contract changes.
-- Use stable machine-readable error codes.
-- Enforce ownership and role checks on the server.
-- Prefer idempotent retry-safe operations for uploads, generation, order creation, payment callbacks, and rendering jobs.
-
-## 12. Frontend rules
-
-- Treat server price, authorization, validation, and order state as authoritative.
-- Do not trust client-calculated totals.
-- Preserve unsaved state or clearly block destructive navigation.
-- Every async operation needs loading, success, empty, error, retry, and offline/connection-loss behavior where relevant.
-- Do not introduce free-position editing that violates the constrained MVP editor.
-- Keep mobile behavior within the task acceptance criteria; do not claim full mobile support from a desktop-only implementation.
-
-## 13. AI and automation rules
-
-- AI output is untrusted input and must pass schema and business validation.
-- AI must not bypass locks, product rules, price warnings, or print validation.
-- Store model/prompt/engine versions needed for reproducibility.
-- Use deterministic fallbacks where the specification requires them.
-- Do not claim AI quality without benchmark evidence.
-- Do not send user photographs or sensitive metadata to an external service unless the approved architecture and privacy decision explicitly allow it.
-
-## 14. Git rules
-
-- One task per branch: `task/<TASK-ID>-<short-slug>`.
-- Keep commits focused and include the task ID in commit messages.
-- Do not rewrite shared history.
-- Do not merge your own task.
-- Do not commit generated dependencies, local caches, secrets, test customer data, or production media.
-- Before finishing, show `git status` and summarize the diff.
-
-## 15. Prohibited shortcuts
-
-Do not:
-
-- mark incomplete UI as complete because an API exists;
-- mark an API complete without authorization and error tests;
-- use a static fake instead of the required integration unless the task explicitly requests a stub;
-- leave `TODO`, `FIXME`, commented-out code, disabled tests, or placeholder buttons without documenting them as out of scope;
-- implement multiple roadmap tasks in one diff;
-- alter acceptance criteria after implementation to match the produced code;
-- update `MASTER_SPEC.md` to hide a mismatch.
-
-## 16. Closeout format
-
-At the end of the task, update the task file and report:
-
-1. Status: `IMPLEMENTED` or `BLOCKED`.
-2. What changed.
-3. Acceptance criteria evidence.
-4. Tests and exact commands.
-5. Files changed.
-6. Migrations/contracts changed.
-7. Known limitations.
-8. Human verification steps.
-9. Recommended next task, without starting it.
+- README описывает назначение, запуск и навигацию, а не копирует правила.
+- Roadmap определяет порядок; backlog и backend-документ отражают фактический
+  прогресс; API-папка владеет wire-контрактом.
+- Постоянную документацию обновлять только при изменении продукта,
+  архитектуры, контракта, значимого flow или статуса milestone.
+- Перед завершением показать `git status`, кратко описать diff и перечислить
+  выполненные проверки.
