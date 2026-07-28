@@ -1,0 +1,12 @@
+{
+  "error": {
+    "code": "APPROVAL_OUTDATED",
+    "message": "Утверждение не относится к текущей версии проекта.",
+    "requestId": "mock-request-render-409",
+    "retryable": false,
+    "fieldErrors": [],
+    "details": {
+      "projectId": "mock-project-0001"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "frontend",
+  "version": "0.3.0",
+  "description": "Project frontend skills for the Photobook React Router, Redux Toolkit, RTK Query, editor architecture, design review, UI, and recovery workflows.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Photobook Frontend",
+    "shortDescription": "React, Redux, editor, UI, and recovery rules.",
+    "longDescription": "Project-local skills for building the Photobook React 19 frontend with React Router Framework Mode, Redux Toolkit, RTK Query, a pure book command core, premium editorial design review, browser visual QA, and safe recovery behavior.",
+    "developerName": "Local developer",
+    "category": "Developer Tools",
+    "capabilities": ["Write", "Review", "Documentation"],
+    "defaultPrompt": [
+      "Use $frontend-agent to implement this Photobook frontend feature.",
+      "Use $photobook-design-review to design or audit this Photobook interface.",
+      "Use $frontend-error-ux to design this recovery state."
+    ],
+    "brandColor": "#8E5737"
+  }
+}

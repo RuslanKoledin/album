@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "SESSION_EXPIRED",
+    "message": "Сессия закончилась. Войдите снова.",
+    "requestId": "mock-request-session-expired-401",
+    "retryable": false,
+    "fieldErrors": []
+  }
+}

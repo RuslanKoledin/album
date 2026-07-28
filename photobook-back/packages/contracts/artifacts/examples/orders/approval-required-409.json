@@ -1,0 +1,12 @@
+{
+  "error": {
+    "code": "APPROVAL_REQUIRED",
+    "message": "Latest project revision must be approved before checkout.",
+    "requestId": "mock-request-order-approval-409",
+    "retryable": false,
+    "fieldErrors": [],
+    "details": {
+      "projectId": "mock-project-01"
+    }
+  }
+}

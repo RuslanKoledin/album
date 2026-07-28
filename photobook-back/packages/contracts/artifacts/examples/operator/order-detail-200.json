@@ -1,0 +1,76 @@
+{
+  "order": {
+    "id": "mock-order-01",
+    "number": "MOCK-0001",
+    "projectId": "mock-project-01",
+    "approvedRevisionId": "mock-revision-01",
+    "priceQuoteId": "mock-price-quote-01",
+    "status": "created",
+    "quantity": 1,
+    "contact": {
+      "name": "Айжан",
+      "phone": "+996555123456"
+    },
+    "delivery": {
+      "method": "pickup",
+      "city": "Bishkek",
+      "address": null
+    },
+    "customerComment": null,
+    "price": {
+      "amountMinor": 350000,
+      "currency": "KGS",
+      "status": "mock"
+    },
+    "createdAt": "2026-07-22T07:00:00Z",
+    "estimatedReadyAt": null
+  },
+  "project": {
+    "id": "mock-project-01",
+    "ownerId": "mock-user-01",
+    "title": "Семейная история",
+    "status": "approved",
+    "productId": "mock-standard-hardcover",
+    "templateId": "mock-warm-family-story-v0",
+    "categoryTags": ["family"],
+    "catalogVersion": "mock-catalog-v0",
+    "latestRevisionId": "mock-revision-01",
+    "approvedRevisionId": "mock-revision-01",
+    "coverPreviewUrl": null,
+    "createdAt": "2026-07-21T08:30:00Z",
+    "updatedAt": "2026-07-22T06:01:00Z",
+    "deletedAt": null
+  },
+  "approvedRevision": {
+    "id": "mock-revision-01",
+    "projectId": "mock-project-01",
+    "revisionNumber": 1,
+    "documentHash": "sha256:mock-document-v1",
+    "createdAt": "2026-07-21T08:30:00Z"
+  },
+  "approval": {
+    "id": "mock-approval-01",
+    "projectId": "mock-project-01",
+    "approvedRevisionId": "mock-revision-01",
+    "preflightRunId": "mock-preflight-01",
+    "checklist": {
+      "namesChecked": true,
+      "datesChecked": true,
+      "captionsChecked": true,
+      "pageOrderChecked": true,
+      "cropUnderstood": true,
+      "readyForPrint": true
+    },
+    "acknowledgedWarningIds": [],
+    "approvedAt": "2026-07-22T06:01:00Z"
+  },
+  "preflightRun": {
+    "id": "mock-preflight-01",
+    "projectId": "mock-project-01",
+    "revisionId": "mock-revision-01",
+    "status": "succeeded",
+    "issues": [],
+    "createdAt": "2026-07-22T06:00:00Z",
+    "completedAt": "2026-07-22T06:00:01Z"
+  }
+}

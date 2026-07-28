@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:photobook:schema:book-command:v1",
+  "title": "BookCommandV1",
+  "description": "Serializable command shared by the manual Photobook editor and future AI command batches.",
+  "oneOf": [
+    { "$ref": "#/$defs/setBookTitle" },
+    { "$ref": "#/$defs/setCoverOption" },
+    { "$ref": "#/$defs/setSpreadLayout" },
+    { "$ref": "#/$defs/assignPhoto" },
+    { "$ref": "#/$defs/removePhoto" },
+    { "$ref": "#/$defs/setPhotoCrop" },
+    { "$ref": "#/$defs/setPhotoFocalPoint" },
+    { "$ref": "#/$defs/swapPhotos" },
+    { "$ref": "#/$defs/setText" },
+    { "$ref": "#/$defs/removeText" },
+    { "$ref": "#/$defs/addSpread" },
+    { "$ref": "#/$defs/removeSpread" },
+    { "$ref": "#/$defs/reorderSpread" },
+    { "$ref": "#/$defs/setThemeOption" }
+  ],
+  "$defs": {
+    "opaqueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "setBookTitle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "title"],
+      "properties": {
+        "type": { "const": "set_book_title" },
+        "title": { "type": "string" }
+      }
+    },
+    "setCoverOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "optionId", "valueId"],
+      "properties": {
+        "type": { "const": "set_cover_option" },
+        "optionId": { "$ref": "#/$defs/opaqueId" },
+        "valueId": { "$ref": "#/$defs/opaqueId" }
+      }
+    },
+    "setSpreadLayout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "spreadId", "layoutId", "photoSlots", "textBlocks"],
+      "properties": {
+        "type": { "const": "set_spread_layout" },
+        "spreadId": { "$ref": "#/$defs/opaqueId" },
+        "layoutId": { "$ref": "#/$defs/opaqueId" },
+        "photoSlots": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:photobook:schema:book-document:v1#/$defs/photoSlot"
+          }
+        },
+        "textBlocks": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:photobook:schema:book-document:v1#/$defs/textBlock"
+          }
+        }
+      }
+    },
+    "assignPhoto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "photoSlotId", "assetId"],
+      "properties": {
+        "type": { "const": "assign_photo" },
+        "photoSlotId": { "$ref": "#/$defs/opaqueId" },
+        "assetId": { "$ref": "#/$defs/opaqueId" }
+      }
+    },
+    "removePhoto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "photoSlotId"],
+      "properties": {
+        "type": { "const": "remove_photo" },
+        "photoSlotId": { "$ref": "#/$defs/opaqueId" }
+      }
+    },
+    "setPhotoCrop": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "photoSlotId", "crop"],
+      "properties": {
+        "type": { "const": "set_photo_crop" },
+        "photoSlotId": { "$ref": "#/$defs/opaqueId" },
+        "crop": {
+          "$ref": "urn:photobook:schema:book-document:v1#/$defs/normalizedRect"
+        }
+      }
+    },
+    "setPhotoFocalPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "photoSlotId", "focalPoint"],
+      "properties": {
+        "type": { "const": "set_photo_focal_point" },
+        "photoSlotId": { "$ref": "#/$defs/opaqueId" },
+        "focalPoint": {
+          "$ref": "urn:photobook:schema:book-document:v1#/$defs/normalizedPoint"
+        }
+      }
+    },
+    "swapPhotos": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "firstPhotoSlotId", "secondPhotoSlotId"],
+      "properties": {
+        "type": { "const": "swap_photos" },
+        "firstPhotoSlotId": { "$ref": "#/$defs/opaqueId" },
+        "secondPhotoSlotId": { "$ref": "#/$defs/opaqueId" }
+      }
+    },
+    "setText": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "textBlockId", "text"],
+      "properties": {
+        "type": { "const": "set_text" },
+        "textBlockId": { "$ref": "#/$defs/opaqueId" },
+        "text": { "type": "string" }
+      }
+    },
+    "removeText": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "textBlockId"],
+      "properties": {
+        "type": { "const": "remove_text" },
+        "textBlockId": { "$ref": "#/$defs/opaqueId" }
+      }
+    },
+    "addSpread": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "spread"],
+      "properties": {
+        "type": { "const": "add_spread" },
+        "spread": {
+          "$ref": "urn:photobook:schema:book-document:v1#/$defs/spread"
+        },
+        "index": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "removeSpread": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "spreadId"],
+      "properties": {
+        "type": { "const": "remove_spread" },
+        "spreadId": { "$ref": "#/$defs/opaqueId" }
+      }
+    },
+    "reorderSpread": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "spreadId", "toIndex"],
+      "properties": {
+        "type": { "const": "reorder_spread" },
+        "spreadId": { "$ref": "#/$defs/opaqueId" },
+        "toIndex": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "setThemeOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "themeId"],
+      "properties": {
+        "type": { "const": "set_theme_option" },
+        "themeId": { "$ref": "#/$defs/opaqueId" }
+      }
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:photobook:schema:analytics-event:v1",
+  "title": "Photobook funnel analytics event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "eventName",
+    "occurredAt",
+    "anonymousSessionId",
+    "projectId",
+    "orderId",
+    "properties"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "eventId": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "eventName": {
+      "enum": [
+        "landingViewed",
+        "createStarted",
+        "productSelected",
+        "templateSelected",
+        "authCompleted",
+        "uploadStarted",
+        "uploadCompleted",
+        "editorOpened",
+        "firstEditCompleted",
+        "previewOpened",
+        "projectApproved",
+        "checkoutStarted",
+        "orderCreated",
+        "paymentConfirmed",
+        "orderCompleted"
+      ]
+    },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "anonymousSessionId": {
+      "anyOf": [
+        { "type": "string", "minLength": 1, "maxLength": 128 },
+        { "type": "null" }
+      ]
+    },
+    "projectId": {
+      "anyOf": [
+        { "type": "string", "minLength": 1, "maxLength": 128 },
+        { "type": "null" }
+      ]
+    },
+    "orderId": {
+      "anyOf": [
+        { "type": "string", "minLength": 1, "maxLength": 128 },
+        { "type": "null" }
+      ]
+    },
+    "properties": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 1,
+      "properties": {
+        "productId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "templateId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "assetCount": { "type": "integer", "minimum": 0, "maximum": 500 },
+        "revisionNumber": { "type": "integer", "minimum": 1 },
+        "deliveryMethod": { "enum": ["pickup", "courier"] },
+        "status": {
+          "enum": [
+            "created",
+            "awaiting_payment",
+            "in_production",
+            "ready_for_pickup",
+            "completed"
+          ]
+        }
+      }
+    }
+  }
+}

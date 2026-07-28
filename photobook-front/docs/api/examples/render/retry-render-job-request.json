@@ -1,0 +1,5 @@
+{
+  "approvalId": "mock-approval-0001",
+  "type": "print_pdf",
+  "retryOfRenderJobId": "mock-render-job-failed-0001"
+}

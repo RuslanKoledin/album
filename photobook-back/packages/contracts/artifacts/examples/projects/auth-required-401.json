@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "AUTH_REQUIRED",
+    "message": "Войдите, чтобы продолжить.",
+    "requestId": "mock-request-auth-401",
+    "retryable": false,
+    "fieldErrors": []
+  }
+}

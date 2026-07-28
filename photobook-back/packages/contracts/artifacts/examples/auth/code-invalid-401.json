@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "AUTH_CODE_INVALID",
+    "message": "Код не подошёл.",
+    "requestId": "mock-request-auth-code-401",
+    "retryable": false,
+    "fieldErrors": []
+  }
+}

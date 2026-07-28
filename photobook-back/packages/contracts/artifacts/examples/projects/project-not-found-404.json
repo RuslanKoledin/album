@@ -1,0 +1,12 @@
+{
+  "error": {
+    "code": "RESOURCE_NOT_FOUND",
+    "message": "Проект не найден.",
+    "requestId": "mock-request-project-404",
+    "retryable": false,
+    "fieldErrors": [],
+    "details": {
+      "projectId": "mock-project-missing"
+    }
+  }
+}

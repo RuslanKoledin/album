@@ -1,0 +1,4 @@
+interface:
+  display_name: "Photobook Design Review"
+  short_description: "Design and browser QA for Photobook UI"
+  default_prompt: "Use $photobook-design-review to design, implement, or review this Photobook interface."

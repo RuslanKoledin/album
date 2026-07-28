@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "RATE_LIMITED",
+    "message": "Слишком много попыток. Попробуйте немного позже.",
+    "requestId": "mock-request-auth-rate-429",
+    "retryable": true,
+    "fieldErrors": []
+  }
+}

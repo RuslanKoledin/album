@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "eventId": "mock-event-preview-01",
+  "eventName": "previewOpened",
+  "occurredAt": "2026-07-22T06:00:00Z",
+  "anonymousSessionId": "mock-session-01",
+  "projectId": "mock-project-01",
+  "orderId": null,
+  "properties": {}
+}

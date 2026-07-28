@@ -1,0 +1,9 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+build/
+coverage/
+node_modules/
+packages/database/src/generated/
+*.log

@@ -1,0 +1,21 @@
+{
+  "id": "mock-render-job-0001",
+  "projectId": "mock-project-0001",
+  "approvalId": "mock-approval-0001",
+  "approvedRevisionId": "mock-revision-0001",
+  "type": "print_pdf",
+  "status": "succeeded",
+  "attempt": 1,
+  "renderProfileVersion": "mock-print-profile-v0",
+  "retryOfRenderJobId": null,
+  "output": {
+    "mediaType": "application/pdf",
+    "sizeBytes": 2457600,
+    "sha256": "sha256:mock-render-output-0001",
+    "pageCount": 3
+  },
+  "failure": null,
+  "createdAt": "2026-07-23T09:00:00.000Z",
+  "startedAt": "2026-07-23T09:00:01.000Z",
+  "completedAt": "2026-07-23T09:00:12.000Z"
+}

@@ -1,0 +1,1275 @@
+openapi: 3.1.0
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+x-contract-status: FROZEN
+x-freeze-basis: Internal Product Owner decision for auth, project, asset and review mock slices; backend acceptance is pending.
+info:
+  title: Photobook API
+  version: 0.1.0
+  license:
+    name: Proprietary
+    identifier: LicenseRef-Proprietary
+  description: >-
+    First contract slice for the Photobook web editor. All identifiers and
+    production values in the current examples are explicitly mock-only.
+servers:
+  - url: /api/v1
+tags:
+  - name: Auth
+    description: Phone challenge, cookie session and logout.
+  - name: Catalog
+    description: Immutable constructor configuration.
+  - name: Pricing
+    description: Provisional configuration-bound calculations for the mock flow.
+  - name: Projects
+    description: Project draft and immutable document revisions.
+  - name: Assets
+    description: Direct upload lifecycle and project-owned asset recovery.
+  - name: Review
+    description: Revision preflight and immutable print approval.
+  - name: Render
+    description: Draft print-PDF job lifecycle gated by an approved render profile.
+  - name: Orders
+    description: Mock checkout request and order status for the M2 walking skeleton.
+  - name: Admin
+    description: Role-protected internal operator read models.
+paths:
+  /auth/challenges:
+    post:
+      tags: [Auth]
+      operationId: createAuthChallenge
+      summary: Send a one-time code to a phone number
+      description: The response never reveals whether the contact already has an account.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthChallengeRequest'
+            examples:
+              phone:
+                externalValue: ./examples/auth/challenge-request.json
+      responses:
+        '201':
+          description: Challenge created without disclosing account existence.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthChallengeResponse'
+              examples:
+                created:
+                  externalValue: ./examples/auth/challenge-created-201.json
+        '422':
+          description: Phone or locale validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                validationFailed:
+                  externalValue: ./examples/auth/validation-failed-422.json
+        '429':
+          description: Challenge request rate limit reached.
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                rateLimited:
+                  externalValue: ./examples/auth/rate-limited-429.json
+        '503':
+          description: The OTP provider is temporarily unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                unavailable:
+                  externalValue: ./examples/auth/provider-unavailable-503.json
+  /auth/challenges/{challengeId}/verify:
+    post:
+      tags: [Auth]
+      operationId: verifyAuthChallenge
+      summary: Verify a one-time code and create a session
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/ChallengeIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyAuthChallengeRequest'
+            examples:
+              mockCode:
+                externalValue: ./examples/auth/verification-request.json
+      responses:
+        '200':
+          description: Code accepted and the opaque session cookie set.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthVerificationResponse'
+              examples:
+                verified:
+                  externalValue: ./examples/auth/verification-response-200.json
+        '401':
+          description: Code is invalid or expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                invalid:
+                  externalValue: ./examples/auth/code-invalid-401.json
+                expired:
+                  externalValue: ./examples/auth/code-expired-401.json
+        '422':
+          description: Verification code shape is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                validationFailed:
+                  externalValue: ./examples/auth/validation-failed-422.json
+        '429':
+          description: Verification attempt rate limit reached.
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                rateLimited:
+                  externalValue: ./examples/auth/rate-limited-429.json
+  /auth/challenges/{challengeId}/resend:
+    post:
+      tags: [Auth]
+      operationId: resendAuthChallenge
+      summary: Send a fresh one-time code for an active challenge
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/ChallengeIdPath'
+      responses:
+        '200':
+          description: Challenge timing refreshed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthChallengeResponse'
+              examples:
+                resent:
+                  externalValue: ./examples/auth/challenge-created-201.json
+        '401':
+          description: Challenge is missing, already used or expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                expired:
+                  externalValue: ./examples/auth/code-expired-401.json
+        '429':
+          description: Resend is not yet available or rate limit reached.
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                rateLimited:
+                  externalValue: ./examples/auth/rate-limited-429.json
+        '503':
+          description: The OTP provider is temporarily unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                unavailable:
+                  externalValue: ./examples/auth/provider-unavailable-503.json
+  /auth/session:
+    get:
+      tags: [Auth]
+      operationId: getAuthSession
+      summary: Bootstrap the current cookie session
+      description: Anonymous state is a successful 200 response, not an authorization error.
+      security: []
+      responses:
+        '200':
+          description: Current authenticated or anonymous session state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSessionResponse'
+              examples:
+                authenticated:
+                  externalValue: ./examples/auth/session-authenticated-200.json
+                anonymous:
+                  externalValue: ./examples/auth/session-anonymous-200.json
+        '429':
+          description: Session bootstrap rate limit reached.
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/RetryAfter'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                rateLimited:
+                  externalValue: ./examples/auth/rate-limited-429.json
+  /auth/logout:
+    post:
+      tags: [Auth]
+      operationId: logout
+      summary: Invalidate the current session and clear its cookie
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/CsrfTokenHeader'
+      responses:
+        '204':
+          description: Session invalidated. Response has no body.
+        '401':
+          description: Authentication is required or the session expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                authRequired:
+                  externalValue: ./examples/projects/auth-required-401.json
+                sessionExpired:
+                  externalValue: ./examples/auth/session-expired-401.json
+        '403':
+          description: The CSRF token is absent, expired or does not match the session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                csrfInvalid:
+                  externalValue: ./examples/projects/csrf-invalid-403.json
+  /catalog/versions/{catalogVersion}:
+    get:
+      tags: [Catalog]
+      operationId: getCatalogVersion
+      summary: Get an immutable catalog configuration bundle
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/CatalogVersionPath'
+      responses:
+        '200':
+          description: Catalog version found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogVersionResponse'
+              examples:
+                mockCatalog:
+                  summary: One mock product, theme, template and three layouts.
+                  externalValue: ./fixtures/catalog/v1/valid/mock-book-config-bundle.json
+        '404':
+          description: Catalog version is unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                unavailable:
+                  externalValue: ./examples/catalog/catalog-version-unavailable-404.json
+  /price-quotes:
+    post:
+      x-contract-status: DRAFT
+      tags: [Pricing]
+      operationId: createPriceQuote
+      summary: Calculate one provisional price for a selected configuration
+      description: >-
+        The M2 response is explicitly provisional, expires, and is not an offer.
+        Checkout must reference the quote it showed to the customer.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PriceQuoteRequest'
+            examples:
+              pickup:
+                externalValue: ./examples/pricing/price-quote-request.json
+      responses:
+        '201':
+          description: Provisional quote created for the exact configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceQuote'
+              examples:
+                created:
+                  externalValue: ./examples/pricing/price-quote-created-201.json
+        '422':
+          description: Catalog version or configuration cannot be priced.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                validationFailed:
+                  externalValue: ./examples/pricing/price-quote-validation-failed-422.json
+  /projects:
+    get:
+      x-contract-status: DRAFT
+      tags: [Projects]
+      operationId: getProjects
+      summary: List projects owned by the current customer
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/CursorQuery'
+        - $ref: '#/components/parameters/LimitQuery'
+      responses:
+        '200':
+          description: Cursor page of customer projects.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectList'
+              examples:
+                projects:
+                  externalValue: ./examples/projects/project-list-200.json
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+    post:
+      tags: [Projects]
+      operationId: createProject
+      summary: Create a project and its first immutable revision
+      description: >-
+        Reusing the same Idempotency-Key with the same body returns the original
+        201 response without creating another project. Reusing it with another
+        body returns IDEMPOTENCY_KEY_REUSED.
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/CsrfTokenHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectRequest'
+            examples:
+              standardHardcover:
+                externalValue: ./examples/projects/create-project-request.json
+      responses:
+        '201':
+          description: Project and first revision created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetail'
+              examples:
+                created:
+                  externalValue: ./examples/projects/project-detail-200.json
+        '401':
+          description: Authentication is required or the cookie session is no longer active.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                authRequired:
+                  externalValue: ./examples/projects/auth-required-401.json
+                sessionExpired:
+                  externalValue: ./examples/auth/session-expired-401.json
+        '403':
+          description: The CSRF token is absent, expired or does not match the session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                csrfInvalid:
+                  externalValue: ./examples/projects/csrf-invalid-403.json
+        '409':
+          description: Idempotency key or project state conflict.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                idempotencyKeyReused:
+                  externalValue: ./examples/projects/idempotency-key-reused-409.json
+        '422':
+          description: Product, template, options or spread count are incompatible.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                validationFailed:
+                  externalValue: ./examples/projects/create-project-validation-failed-422.json
+  /projects/{projectId}:
+    get:
+      tags: [Projects]
+      operationId: getProject
+      summary: Get a project and its latest revision
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+      responses:
+        '200':
+          description: Project found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetail'
+              examples:
+                project:
+                  externalValue: ./examples/projects/project-detail-200.json
+        '401':
+          description: Authentication is required or the cookie session is no longer active.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                authRequired:
+                  externalValue: ./examples/projects/auth-required-401.json
+                sessionExpired:
+                  externalValue: ./examples/auth/session-expired-401.json
+        '404':
+          description: Project is absent or hidden by the access policy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                notFound:
+                  externalValue: ./examples/projects/project-not-found-404.json
+  /projects/{projectId}/document:
+    put:
+      tags: [Projects]
+      operationId: saveProjectDocument
+      summary: Save a full document snapshot as a new immutable revision
+      description: >-
+        baseRevisionId provides optimistic concurrency. clientMutationId makes
+        retry of the same logical autosave safe. Reusing clientMutationId with
+        the same base revision and document returns the original 200 response;
+        reusing it with another payload returns CLIENT_MUTATION_ID_REUSED.
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/CsrfTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveProjectDocumentRequest'
+            examples:
+              changedTitle:
+                externalValue: ./examples/projects/autosave-request.json
+      responses:
+        '200':
+          description: New immutable revision saved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaveProjectDocumentResponse'
+              examples:
+                saved:
+                  externalValue: ./examples/projects/autosave-response-200.json
+        '401':
+          description: Authentication is required or the cookie session is no longer active.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                authRequired:
+                  externalValue: ./examples/projects/auth-required-401.json
+                sessionExpired:
+                  externalValue: ./examples/auth/session-expired-401.json
+        '403':
+          description: The CSRF token is absent, expired or does not match the session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                csrfInvalid:
+                  externalValue: ./examples/projects/csrf-invalid-403.json
+        '404':
+          description: Project is absent or hidden by the access policy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                notFound:
+                  externalValue: ./examples/projects/project-not-found-404.json
+        '409':
+          description: baseRevisionId is stale or clientMutationId was reused.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                revisionConflict:
+                  externalValue: ./examples/projects/revision-conflict-409.json
+                clientMutationIdReused:
+                  externalValue: ./examples/projects/client-mutation-id-reused-409.json
+        '422':
+          description: Document or catalog business validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                validationFailed:
+                  externalValue: ./examples/projects/validation-failed-422.json
+  /projects/{projectId}/assets:
+    get:
+      x-contract-status: FROZEN
+      tags: [Assets]
+      operationId: listProjectAssets
+      summary: List project-owned photo assets and temporary thumbnails
+      description: >-
+        Returns at most the 50 assets allowed by the MVP project. BookDocument
+        keeps only stable assetId references; processing metadata and expiring
+        thumbnail URLs belong to this response and must not be persisted in a
+        document revision.
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+      responses:
+        '200':
+          description: Current asset processing state and temporary preview URLs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetList'
+              examples:
+                ready:
+                  externalValue: ./examples/uploads/asset-list-ready-200.json
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '404':
+          $ref: '#/components/responses/ProjectNotFound'
+  /projects/{projectId}/upload-batches:
+    post:
+      x-contract-status: FROZEN
+      tags: [Assets]
+      operationId: createProjectUploadBatch
+      summary: Reserve assets and issue short-lived upload instructions
+      description: >-
+        The browser sends metadata only. Reusing the same Idempotency-Key with
+        an identical body returns the original batch; local File objects never
+        enter this request or the RTK Query cache.
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/CsrfTokenHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUploadBatchRequest'
+            examples:
+              jpeg:
+                externalValue: ./examples/uploads/upload-batch-request.json
+      responses:
+        '201':
+          description: Asset reservations and one short-lived instruction per file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUploadBatchResponse'
+              examples:
+                created:
+                  externalValue: ./examples/uploads/upload-batch-created-201.json
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/CsrfInvalid'
+        '404':
+          $ref: '#/components/responses/ProjectNotFound'
+        '409':
+          description: The idempotency key was reused with different metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                idempotencyKeyReused:
+                  externalValue: ./examples/projects/idempotency-key-reused-409.json
+        '422':
+          description: File metadata, type, size or batch limit is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                validationFailed:
+                  externalValue: ./examples/projects/validation-failed-422.json
+  /projects/{projectId}/assets/{assetId}/complete:
+    post:
+      x-contract-status: FROZEN
+      tags: [Assets]
+      operationId: completeProjectAssetUpload
+      summary: Confirm that object storage received the original
+      description: >-
+        Completion is idempotent for the same asset metadata. The backend
+        verifies storage state, expected media type and size before accepting it.
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/AssetIdPath'
+        - $ref: '#/components/parameters/CsrfTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteAssetUploadRequest'
+            examples:
+              uploaded:
+                externalValue: ./examples/uploads/complete-upload-request.json
+      responses:
+        '200':
+          description: Upload accepted; processing may continue asynchronously.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+              examples:
+                uploaded:
+                  externalValue: ./examples/uploads/asset-uploaded-200.json
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/CsrfInvalid'
+        '404':
+          $ref: '#/components/responses/ProjectNotFound'
+        '409':
+          description: Object storage has not accepted the expected original yet.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                incomplete:
+                  externalValue: ./examples/uploads/upload-incomplete-409.json
+        '422':
+          description: Completion metadata does not match the reserved asset.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                validationFailed:
+                  externalValue: ./examples/projects/validation-failed-422.json
+  /projects/{projectId}/assets/{assetId}/renew-upload:
+    post:
+      x-contract-status: FROZEN
+      tags: [Assets]
+      operationId: renewProjectAssetUpload
+      summary: Replace an expired signed upload instruction
+      description: >-
+        The assetId and clientFileId remain stable. The frontend keeps the local
+        file, discards the expired URL and retries with the returned instruction.
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/AssetIdPath'
+        - $ref: '#/components/parameters/CsrfTokenHeader'
+      responses:
+        '200':
+          description: Fresh short-lived upload instruction for the same asset.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadInstruction'
+              examples:
+                renewed:
+                  externalValue: ./examples/uploads/renew-upload-200.json
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/CsrfInvalid'
+        '404':
+          $ref: '#/components/responses/ProjectNotFound'
+        '409':
+          description: The asset was already completed or cannot be uploaded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                stateConflict:
+                  externalValue: ./examples/uploads/upload-incomplete-409.json
+  /projects/{projectId}/preflight-runs:
+    post:
+      tags: [Review]
+      operationId: createProjectPreflightRun
+      summary: Validate one immutable project revision before print approval
+      description: >-
+        The result belongs to revisionId and cannot be reused for a newer
+        project revision.
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/CsrfTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreflightRunRequest'
+            examples:
+              latestRevision:
+                externalValue: ./examples/review/preflight-request.json
+      responses:
+        '201':
+          description: Preflight completed for the requested revision.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreflightRun'
+              examples:
+                succeeded:
+                  externalValue: ./examples/review/preflight-succeeded-201.json
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/CsrfInvalid'
+        '404':
+          $ref: '#/components/responses/ProjectNotFound'
+        '409':
+          $ref: '#/components/responses/RevisionConflict'
+        '422':
+          $ref: '#/components/responses/DocumentValidationFailed'
+  /projects/{projectId}/approvals:
+    post:
+      tags: [Review]
+      operationId: createProjectApproval
+      summary: Approve one immutable project revision for print
+      description: >-
+        Approval is bound to revisionId and preflightRunId. Repeating the same
+        valid request returns the existing approval with 200; the first approval
+        returns 201. Saving a later revision never transfers the approval.
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/CsrfTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApprovalRequest'
+            examples:
+              checkedByCustomer:
+                externalValue: ./examples/review/approval-request.json
+      responses:
+        '200':
+          description: Existing approval returned for an identical revision.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Approval'
+              examples:
+                existing:
+                  externalValue: ./examples/review/approval-created-201.json
+        '201':
+          description: Immutable revision approved for print.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Approval'
+              examples:
+                created:
+                  externalValue: ./examples/review/approval-created-201.json
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/CsrfInvalid'
+        '404':
+          $ref: '#/components/responses/ProjectNotFound'
+        '409':
+          $ref: '#/components/responses/RevisionConflict'
+        '422':
+          $ref: '#/components/responses/DocumentValidationFailed'
+  /projects/{projectId}/render-jobs:
+    post:
+      x-contract-status: DRAFT
+      tags: [Render]
+      operationId: createProjectRenderJob
+      summary: Queue a print-PDF render for the current approved revision
+      description: >-
+        The backend derives an immutable renderProfileVersion from the approved
+        revision and catalog. Until M0 provides an accepted production profile,
+        the operation returns RENDER_PROFILE_UNAVAILABLE and does not queue
+        work. Reusing one Idempotency-Key with the same body preserves the job
+        identity. retryOfRenderJobId may reference only a failed or cancelled
+        job for the same approval; retry never changes the approval. Customer
+        responses never expose the private PDF object key or a download URL.
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/CsrfTokenHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRenderJobRequest'
+            examples:
+              firstAttempt:
+                externalValue: ./examples/render/create-render-job-request.json
+              retry:
+                externalValue: ./examples/render/retry-render-job-request.json
+      responses:
+        '202':
+          description: Render job accepted for asynchronous processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RenderJob'
+              examples:
+                queued:
+                  externalValue: ./examples/render/render-job-queued-202.json
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/CsrfInvalid'
+        '404':
+          $ref: '#/components/responses/ProjectNotFound'
+        '409':
+          description: Approval, retry source or idempotency key is incompatible.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                approvalOutdated:
+                  externalValue: ./examples/render/approval-outdated-409.json
+                idempotencyKeyReused:
+                  externalValue: ./examples/projects/idempotency-key-reused-409.json
+        '422':
+          description: The approved product has no accepted production render profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                profileUnavailable:
+                  externalValue: ./examples/render/render-profile-unavailable-422.json
+  /projects/{projectId}/render-jobs/{renderJobId}:
+    get:
+      x-contract-status: DRAFT
+      tags: [Render]
+      operationId: getProjectRenderJob
+      summary: Read the current state of one project-owned render job
+      description: >-
+        Polling returns output metadata or a safe failure descriptor. PDF
+        download remains a separate role-protected operator operation.
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/RenderJobIdPath'
+      responses:
+        '200':
+          description: Current immutable-input render job snapshot.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RenderJob'
+              examples:
+                succeeded:
+                  externalValue: ./examples/render/render-job-succeeded-200.json
+                failed:
+                  externalValue: ./examples/render/render-job-failed-200.json
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '404':
+          $ref: '#/components/responses/ProjectNotFound'
+  /orders:
+    get:
+      x-contract-status: DRAFT
+      tags: [Orders]
+      operationId: getOrders
+      summary: List orders owned by the current customer
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/CursorQuery'
+        - $ref: '#/components/parameters/LimitQuery'
+      responses:
+        '200':
+          description: Cursor page of customer orders.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderList'
+              examples:
+                orders:
+                  externalValue: ./examples/orders/order-list-200.json
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+    post:
+      x-contract-status: DRAFT
+      tags: [Orders]
+      operationId: createOrder
+      summary: Create one mock order from the latest approved revision
+      description: >-
+        M2 walking-skeleton operation. Price and conditions are explicitly
+        mock-only; payment creation is outside this contract slice. The request
+        references the exact provisional quote shown in checkout. Repeating the
+        same idempotency key and body returns the original 201 response.
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/CsrfTokenHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+            examples:
+              pickupInBishkek:
+                externalValue: ./examples/orders/create-order-request.json
+      responses:
+        '201':
+          description: Mock order created or the identical request replayed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              examples:
+                created:
+                  externalValue: ./examples/orders/order-created-201.json
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/CsrfInvalid'
+        '404':
+          $ref: '#/components/responses/ProjectNotFound'
+        '409':
+          description: Approval is stale or the idempotency key was reused.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                approvalRequired:
+                  externalValue: ./examples/orders/approval-required-409.json
+                idempotencyKeyReused:
+                  externalValue: ./examples/projects/idempotency-key-reused-409.json
+                priceQuoteInvalid:
+                  externalValue: ./examples/orders/price-quote-invalid-409.json
+        '422':
+          $ref: '#/components/responses/DocumentValidationFailed'
+  /orders/{orderId}:
+    get:
+      x-contract-status: DRAFT
+      tags: [Orders]
+      operationId: getOrder
+      summary: Get one order owned by the current customer
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/OrderIdPath'
+      responses:
+        '200':
+          description: Order status and immutable checkout snapshot.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              examples:
+                order:
+                  externalValue: ./examples/orders/order-created-201.json
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '404':
+          description: Order is absent or hidden by the access policy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                notFound:
+                  externalValue: ./examples/orders/order-not-found-404.json
+  /admin/orders/{orderId}:
+    get:
+      x-contract-status: DRAFT
+      tags: [Admin]
+      operationId: getAdminOrder
+      summary: Get one order with its immutable approval context
+      description: >-
+        Read-only M2 operator view. The server authorizes the operator role from
+        the session; the frontend does not send or infer a role claim.
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/OrderIdPath'
+      responses:
+        '200':
+          description: Order, customer, project, approval and preflight snapshot.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperatorOrderDetail'
+              examples:
+                order:
+                  externalValue: ./examples/operator/order-detail-200.json
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          description: The authenticated user does not have an operator role.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                accessDenied:
+                  externalValue: ./examples/operator/access-denied-403.json
+        '404':
+          description: Order is absent or hidden by the access policy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              examples:
+                notFound:
+                  externalValue: ./examples/orders/order-not-found-404.json
+components:
+  securitySchemes:
+    SessionCookie:
+      type: apiKey
+      in: cookie
+      name: photobook_session
+      description: Opaque HttpOnly session cookie set by the backend.
+  parameters:
+    CursorQuery:
+      name: cursor
+      in: query
+      required: false
+      description: Opaque cursor returned by the previous page.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 512
+    LimitQuery:
+      name: limit
+      in: query
+      required: false
+      description: Page size. Defaults to 20 and never exceeds 100.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    ChallengeIdPath:
+      name: challengeId
+      in: path
+      required: true
+      description: Opaque one-time authentication challenge identifier.
+      schema:
+        $ref: '#/components/schemas/OpaqueId'
+    CatalogVersionPath:
+      name: catalogVersion
+      in: path
+      required: true
+      description: Opaque immutable catalog version identifier.
+      schema:
+        $ref: '#/components/schemas/OpaqueId'
+    ProjectIdPath:
+      name: projectId
+      in: path
+      required: true
+      description: Opaque project identifier.
+      schema:
+        $ref: '#/components/schemas/OpaqueId'
+    AssetIdPath:
+      name: assetId
+      in: path
+      required: true
+      description: Opaque asset identifier scoped to the current project.
+      schema:
+        $ref: '#/components/schemas/OpaqueId'
+    RenderJobIdPath:
+      name: renderJobId
+      in: path
+      required: true
+      description: Opaque render job identifier scoped to the current project.
+      schema:
+        $ref: '#/components/schemas/OpaqueId'
+    OrderIdPath:
+      name: orderId
+      in: path
+      required: true
+      description: Opaque order identifier.
+      schema:
+        $ref: '#/components/schemas/OpaqueId'
+    CsrfTokenHeader:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      description: In-memory CSRF token associated with the current session.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 512
+    IdempotencyKeyHeader:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Opaque key for safely retrying one logical create operation.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+  headers:
+    RetryAfter:
+      description: Seconds until the client may safely retry.
+      schema:
+        type: integer
+        minimum: 1
+  responses:
+    AuthenticationRequired:
+      description: Authentication is required or the cookie session is no longer active.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          examples:
+            authRequired:
+              externalValue: ./examples/projects/auth-required-401.json
+            sessionExpired:
+              externalValue: ./examples/auth/session-expired-401.json
+    CsrfInvalid:
+      description: The CSRF token is absent, expired or does not match the session.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          examples:
+            csrfInvalid:
+              externalValue: ./examples/projects/csrf-invalid-403.json
+    ProjectNotFound:
+      description: Project or related review resource is unavailable.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          examples:
+            notFound:
+              externalValue: ./examples/projects/project-not-found-404.json
+    RevisionConflict:
+      description: The requested revision is no longer current or does not match.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          examples:
+            revisionConflict:
+              externalValue: ./examples/projects/revision-conflict-409.json
+    DocumentValidationFailed:
+      description: Checklist, warnings or document validation is incomplete.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          examples:
+            validationFailed:
+              externalValue: ./examples/projects/validation-failed-422.json
+  schemas:
+    OpaqueId:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/opaqueId
+    ErrorEnvelope:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/errorEnvelope
+    AuthChallengeRequest:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/authChallengeRequest
+    AuthChallengeResponse:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/authChallengeResponse
+    VerifyAuthChallengeRequest:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/verifyAuthChallengeRequest
+    AuthVerificationResponse:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/authVerificationResponse
+    AuthSessionResponse:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/authSessionResponse
+    CatalogVersionResponse:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/catalogVersionResponse
+    PriceQuoteRequest:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/priceQuoteRequest
+    PriceQuote:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/priceQuote
+    CreateProjectRequest:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/createProjectRequest
+    ProjectDetail:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/projectDetail
+    ProjectList:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/projectList
+    CreateUploadBatchRequest:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/createUploadBatchRequest
+    CreateUploadBatchResponse:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/createUploadBatchResponse
+    UploadInstruction:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/uploadInstruction
+    CompleteAssetUploadRequest:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/completeAssetUploadRequest
+    Asset:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/asset
+    AssetList:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/assetList
+    SaveProjectDocumentRequest:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/saveProjectDocumentRequest
+    SaveProjectDocumentResponse:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/saveProjectDocumentResponse
+    PreflightRunRequest:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/preflightRunRequest
+    PreflightRun:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/preflightRun
+    CreateApprovalRequest:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/createApprovalRequest
+    Approval:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/approval
+    CreateRenderJobRequest:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/createRenderJobRequest
+    RenderJob:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/renderJob
+    CreateOrderRequest:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/createOrderRequest
+    Order:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/order
+    OrderList:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/orderList
+    OperatorOrderDetail:
+      $ref: ./schemas/http-contract-v1.schema.json#/$defs/operatorOrderDetail

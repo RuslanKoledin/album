@@ -1,0 +1,12 @@
+{
+  "error": {
+    "code": "CATALOG_VERSION_UNAVAILABLE",
+    "message": "Версия каталога недоступна.",
+    "requestId": "mock-request-catalog-404",
+    "retryable": false,
+    "fieldErrors": [],
+    "details": {
+      "catalogVersion": "mock-catalog-unavailable"
+    }
+  }
+}

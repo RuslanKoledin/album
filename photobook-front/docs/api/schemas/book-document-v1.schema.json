@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:photobook:schema:book-document:v1",
+  "title": "BookDocumentV1",
+  "description": "Serializable Photobook document shared by the editor, backend and renderer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "metadata",
+    "productSelection",
+    "assets",
+    "cover",
+    "spreads"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "metadata": { "$ref": "#/$defs/bookMetadata" },
+    "productSelection": { "$ref": "#/$defs/productSelection" },
+    "assets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/assetReference" },
+      "uniqueItems": true
+    },
+    "cover": { "$ref": "#/$defs/bookSurface" },
+    "spreads": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/spread" }
+    }
+  },
+  "$defs": {
+    "opaqueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "physicalSizeMm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "physicalRectMm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "normalizedPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "type": "number", "minimum": 0, "maximum": 1 },
+        "y": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "normalizedRect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": { "type": "number", "minimum": 0, "maximum": 1 },
+        "y": { "type": "number", "minimum": 0, "maximum": 1 },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "bookMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title"],
+      "properties": {
+        "title": { "type": "string" }
+      }
+    },
+    "productOptionSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["optionId", "valueId"],
+      "properties": {
+        "optionId": { "$ref": "#/$defs/opaqueId" },
+        "valueId": { "$ref": "#/$defs/opaqueId" }
+      }
+    },
+    "productSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "productId",
+        "productSpecId",
+        "catalogVersion",
+        "templateId",
+        "themeId",
+        "optionSelections"
+      ],
+      "properties": {
+        "productId": { "$ref": "#/$defs/opaqueId" },
+        "productSpecId": { "$ref": "#/$defs/opaqueId" },
+        "catalogVersion": { "$ref": "#/$defs/opaqueId" },
+        "templateId": { "$ref": "#/$defs/opaqueId" },
+        "themeId": { "$ref": "#/$defs/opaqueId" },
+        "optionSelections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/productOptionSelection" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "assetReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assetId"],
+      "properties": {
+        "assetId": { "$ref": "#/$defs/opaqueId" }
+      }
+    },
+    "photoSlot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "layoutSlotKey",
+        "frameMm",
+        "assetId",
+        "crop",
+        "focalPoint"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "layoutSlotKey": { "$ref": "#/$defs/opaqueId" },
+        "frameMm": { "$ref": "#/$defs/physicalRectMm" },
+        "assetId": {
+          "anyOf": [{ "$ref": "#/$defs/opaqueId" }, { "type": "null" }]
+        },
+        "crop": { "$ref": "#/$defs/normalizedRect" },
+        "focalPoint": { "$ref": "#/$defs/normalizedPoint" }
+      }
+    },
+    "textBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "layoutSlotKey",
+        "frameMm",
+        "role",
+        "textStyleId",
+        "text"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "layoutSlotKey": { "$ref": "#/$defs/opaqueId" },
+        "frameMm": { "$ref": "#/$defs/physicalRectMm" },
+        "role": {
+          "enum": ["title", "subtitle", "body", "caption"]
+        },
+        "textStyleId": { "$ref": "#/$defs/opaqueId" },
+        "text": { "type": "string" }
+      }
+    },
+    "bookSurface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["layoutId", "sizeMm", "photoSlots", "textBlocks"],
+      "properties": {
+        "layoutId": { "$ref": "#/$defs/opaqueId" },
+        "sizeMm": { "$ref": "#/$defs/physicalSizeMm" },
+        "photoSlots": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/photoSlot" }
+        },
+        "textBlocks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/textBlock" }
+        }
+      }
+    },
+    "spread": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "layoutId", "sizeMm", "photoSlots", "textBlocks"],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "layoutId": { "$ref": "#/$defs/opaqueId" },
+        "sizeMm": { "$ref": "#/$defs/physicalSizeMm" },
+        "photoSlots": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/photoSlot" }
+        },
+        "textBlocks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/textBlock" }
+        }
+      }
+    }
+  }
+}

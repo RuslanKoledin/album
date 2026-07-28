@@ -1,0 +1,12 @@
+{
+  "error": {
+    "code": "PROJECT_REVISION_CONFLICT",
+    "message": "Проект был изменён в другом окне.",
+    "requestId": "mock-request-revision-409",
+    "retryable": false,
+    "fieldErrors": [],
+    "details": {
+      "latestRevisionId": "mock-revision-02"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "ASSET_UPLOAD_INCOMPLETE",
+    "message": "Оригинал ещё не получен хранилищем.",
+    "requestId": "mock-request-upload-incomplete-409",
+    "retryable": true,
+    "fieldErrors": []
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Photobook Routing'
+  short_description: 'Typed React Router routes for Photobook'
+  default_prompt: 'Use $typescript-react-routing to add or review this Photobook route.'

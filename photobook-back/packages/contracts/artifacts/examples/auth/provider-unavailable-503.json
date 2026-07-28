@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "EXTERNAL_PROVIDER_UNAVAILABLE",
+    "message": "Сейчас не удалось отправить код.",
+    "requestId": "mock-request-auth-provider-503",
+    "retryable": true,
+    "fieldErrors": []
+  }
+}

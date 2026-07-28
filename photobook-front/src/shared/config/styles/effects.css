@@ -1,0 +1,5 @@
+@theme {
+  --shadow-book: 0 30px 80px rgb(74 55 33 / 22%);
+  --shadow-surface: 0 24px 80px rgb(78 61 39 / 8%);
+  --shadow-floating: 0 18px 48px rgb(23 23 19 / 18%);
+}

@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "CLIENT_MUTATION_ID_REUSED",
+    "message": "Не удалось безопасно повторить сохранение.",
+    "requestId": "mock-request-mutation-409",
+    "retryable": false,
+    "fieldErrors": []
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "projectId": "mock-project-01",
+  "approvedRevisionId": "mock-revision-01",
+  "priceQuoteId": "mock-price-quote-01",
+  "quantity": 1,
+  "contact": {
+    "name": "Айжан",
+    "phone": "+996555123456"
+  },
+  "delivery": {
+    "method": "pickup",
+    "city": "Bishkek",
+    "address": null
+  },
+  "customerComment": null,
+  "approvedLayoutConfirmed": true,
+  "mockConditionsAcknowledged": true
+}

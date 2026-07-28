@@ -1,0 +1,15 @@
+{
+  "batchId": "mock-upload-batch-01",
+  "uploads": [
+    {
+      "clientFileId": "mock-local-photo-01",
+      "assetId": "mock-asset-upload-01",
+      "method": "PUT",
+      "uploadUrl": "https://mock-storage.invalid/uploads/mock-asset-upload-01?token=mock-signed-token-01",
+      "headers": {
+        "Content-Type": "image/jpeg"
+      },
+      "expiresAt": "2026-07-22T08:50:00Z"
+    }
+  ]
+}

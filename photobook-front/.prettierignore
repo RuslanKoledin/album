@@ -1,0 +1,10 @@
+build
+node_modules
+.react-router
+coverage
+.playwright-cli
+output/playwright
+pnpm-lock.yaml
+competitor-analysis-mixbook.md
+photobook-final-spec-and-plan.md
+frontend-agents-master

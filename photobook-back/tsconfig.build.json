@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "build",
+    "rootDir": ".",
+    "sourceMap": true
+  },
+  "exclude": [
+    "**/*.test.ts",
+    "build",
+    "coverage",
+    "node_modules",
+    "packages/contracts/artifacts"
+  ],
+  "tsc-alias": {
+    "resolveFullExtension": ".js",
+    "resolveFullPaths": true
+  }
+}

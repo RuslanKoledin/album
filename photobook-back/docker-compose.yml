@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:17.10-alpine
+    environment:
+      POSTGRES_DB: photobook
+      POSTGRES_PASSWORD: photobook_local
+      POSTGRES_USER: photobook
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U photobook -d photobook']
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    ports:
+      - '5432:5432'
+    volumes:
+      - photobook-postgres:/var/lib/postgresql/data
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_API_CORS_ALLOW_ORIGIN: http://localhost:5173
+      MINIO_ROOT_PASSWORD: photobook-local-secret
+      MINIO_ROOT_USER: photobook-local
+    healthcheck:
+      test:
+        ['CMD', 'curl', '--fail', 'http://localhost:9000/minio/health/ready']
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - photobook-minio:/data
+
+volumes:
+  photobook-minio:
+  photobook-postgres:

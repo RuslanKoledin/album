@@ -1,0 +1,13 @@
+{
+  "assetId": "mock-asset-upload-01",
+  "status": "uploaded",
+  "fileName": "IMG_1024.JPG",
+  "mediaType": "image/jpeg",
+  "sizeBytes": 4821341,
+  "pixelWidth": null,
+  "pixelHeight": null,
+  "capturedAt": null,
+  "thumbnailUrl": null,
+  "thumbnailExpiresAt": null,
+  "createdAt": "2026-07-22T08:40:00Z"
+}

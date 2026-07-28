@@ -1,0 +1,16 @@
+{
+  "id": "mock-approval-01",
+  "projectId": "mock-project-01",
+  "approvedRevisionId": "mock-revision-01",
+  "preflightRunId": "mock-preflight-01",
+  "checklist": {
+    "namesChecked": true,
+    "datesChecked": true,
+    "captionsChecked": true,
+    "pageOrderChecked": true,
+    "cropUnderstood": true,
+    "readyForPrint": true
+  },
+  "acknowledgedWarningIds": [],
+  "approvedAt": "2026-07-22T06:01:00Z"
+}

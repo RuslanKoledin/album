@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Photobook Error UX'
+  short_description: 'Safe editor, upload and checkout recovery'
+  default_prompt: 'Use $frontend-error-ux to implement or review this Photobook failure and recovery state.'

@@ -1,0 +1,7 @@
+{
+  "name": "frontend",
+  "description": "Frontend agent plugin for modular React, Next.js, UI governance, error UX startup audits, TanStack Router, TanStack Query, Zustand, and shadcn fallback workflows.",
+  "author": {
+    "name": "Local developer"
+  }
+}

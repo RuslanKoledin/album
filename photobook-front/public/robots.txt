@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /account
+Disallow: /checkout/
+Disallow: /create
+Disallow: /login
+Disallow: /operator/
+Disallow: /orders/
+Disallow: /projects/

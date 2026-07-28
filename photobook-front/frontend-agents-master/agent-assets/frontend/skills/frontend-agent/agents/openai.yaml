@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Photobook Frontend'
+  short_description: 'React, Redux and editor rules for Photobook'
+  default_prompt: 'Use $frontend-agent to implement or review this Photobook frontend task with the project stack and editor architecture.'

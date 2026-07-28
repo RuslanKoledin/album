@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "id": "mock-project-01",
+      "ownerId": "mock-user-01",
+      "title": "Семейная история",
+      "status": "editing",
+      "productId": "mock-standard-hardcover",
+      "templateId": "mock-warm-family-story-v0",
+      "categoryTags": ["family"],
+      "catalogVersion": "mock-catalog-v0",
+      "latestRevisionId": "mock-revision-01",
+      "approvedRevisionId": null,
+      "coverPreviewUrl": null,
+      "createdAt": "2026-07-21T08:30:00Z",
+      "updatedAt": "2026-07-21T08:30:00Z",
+      "deletedAt": null
+    }
+  ],
+  "pageInfo": {
+    "nextCursor": null,
+    "hasNextPage": false
+  }
+}

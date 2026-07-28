@@ -1,0 +1,18 @@
+import { useSyncExternalStore } from 'react'
+
+const subscribe = (onStoreChange: () => void) => {
+  window.addEventListener('online', onStoreChange)
+  window.addEventListener('offline', onStoreChange)
+
+  return () => {
+    window.removeEventListener('online', onStoreChange)
+    window.removeEventListener('offline', onStoreChange)
+  }
+}
+
+const getSnapshot = () => window.navigator.onLine
+const getServerSnapshot = () => true
+
+export function useOnlineStatus() {
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+}

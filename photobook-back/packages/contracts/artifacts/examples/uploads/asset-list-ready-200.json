@@ -1,0 +1,17 @@
+{
+  "items": [
+    {
+      "assetId": "mock-upload-asset-1-1",
+      "status": "ready",
+      "fileName": "mock-family-archive.jpg",
+      "mediaType": "image/jpeg",
+      "sizeBytes": 4821341,
+      "pixelWidth": 4032,
+      "pixelHeight": 3024,
+      "capturedAt": "2026-06-10T14:20:00Z",
+      "thumbnailUrl": "https://media.example/mock-project-created-01/mock-upload-asset-1-1?token=mock-thumbnail-token",
+      "thumbnailExpiresAt": "2026-07-22T09:20:00Z",
+      "createdAt": "2026-07-22T08:40:00Z"
+    }
+  ]
+}

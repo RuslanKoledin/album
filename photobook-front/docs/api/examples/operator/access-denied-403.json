@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "ACCESS_DENIED",
+    "message": "Недостаточно прав для просмотра заказа.",
+    "requestId": "mock-operator-access-denied-403",
+    "retryable": false,
+    "fieldErrors": []
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "challengeId": "mock-auth-challenge-01",
+  "maskedContact": "+996 *** ** 56",
+  "expiresAt": "2026-07-22T04:05:00Z",
+  "resendAvailableAt": "2026-07-22T04:01:00Z"
+}

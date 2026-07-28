@@ -1,0 +1,23 @@
+{
+  "name": "react-19-frontend-agent",
+  "version": "0.2.0",
+  "description": "Compatibility React 19 skill package that delegates Photobook architecture to the active frontend plugin and provides focused React and routing guidance.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Photobook React 19 Compatibility",
+    "shortDescription": "React patterns and project routing compatibility.",
+    "longDescription": "Compatibility entry point for older React 19 skill invocations. Photobook stack decisions remain owned by the active frontend plugin; this package supplies focused React component and React Router guidance.",
+    "developerName": "Local developer",
+    "category": "Developer Tools",
+    "capabilities": ["Write", "Review"],
+    "defaultPrompt": [
+      "Use $react-19-frontend-agent for this Photobook React task.",
+      "Use $react-19-patterns to review this component.",
+      "Use $typescript-react-routing to add this route."
+    ],
+    "brandColor": "#8E5737"
+  }
+}

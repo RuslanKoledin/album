@@ -1,0 +1,1327 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:photobook:schema:http-contract:v1",
+  "title": "Photobook HTTP contract schemas v1",
+  "$defs": {
+    "opaqueId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "utcDateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "locale": {
+      "enum": ["ru", "ky"]
+    },
+    "authUser": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "phone",
+        "email",
+        "locale",
+        "profileCompleted"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "name": {
+          "anyOf": [
+            { "type": "string", "minLength": 1, "maxLength": 100 },
+            { "type": "null" }
+          ]
+        },
+        "phone": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{7,14}$"
+        },
+        "email": {
+          "anyOf": [{ "type": "string", "format": "email" }, { "type": "null" }]
+        },
+        "locale": { "$ref": "#/$defs/locale" },
+        "profileCompleted": { "type": "boolean" }
+      }
+    },
+    "authChallengeRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "contact", "locale"],
+      "properties": {
+        "channel": { "const": "phone" },
+        "contact": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{7,14}$"
+        },
+        "locale": { "$ref": "#/$defs/locale" }
+      }
+    },
+    "authChallengeResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "challengeId",
+        "maskedContact",
+        "expiresAt",
+        "resendAvailableAt"
+      ],
+      "properties": {
+        "challengeId": { "$ref": "#/$defs/opaqueId" },
+        "maskedContact": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "expiresAt": { "$ref": "#/$defs/utcDateTime" },
+        "resendAvailableAt": { "$ref": "#/$defs/utcDateTime" }
+      }
+    },
+    "verifyAuthChallengeRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^[0-9]{6}$" }
+      }
+    },
+    "authVerificationResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["user", "csrfToken"],
+      "properties": {
+        "user": { "$ref": "#/$defs/authUser" },
+        "csrfToken": { "type": "string", "minLength": 1, "maxLength": 512 }
+      }
+    },
+    "anonymousSessionResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authenticated", "user", "csrfToken"],
+      "properties": {
+        "authenticated": { "const": false },
+        "user": { "type": "null" },
+        "csrfToken": { "type": "null" }
+      }
+    },
+    "authenticatedSessionResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authenticated", "user", "csrfToken"],
+      "properties": {
+        "authenticated": { "const": true },
+        "user": { "$ref": "#/$defs/authUser" },
+        "csrfToken": { "type": "string", "minLength": 1, "maxLength": 512 }
+      }
+    },
+    "authSessionResponse": {
+      "oneOf": [
+        { "$ref": "#/$defs/anonymousSessionResponse" },
+        { "$ref": "#/$defs/authenticatedSessionResponse" }
+      ]
+    },
+    "textRole": {
+      "enum": ["title", "subtitle", "body", "caption"]
+    },
+    "textSizeToken": {
+      "enum": ["caption", "body", "title"]
+    },
+    "productionStatus": {
+      "enum": ["mock", "approved"]
+    },
+    "productOptionSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["optionId", "valueId"],
+      "properties": {
+        "optionId": { "$ref": "#/$defs/opaqueId" },
+        "valueId": { "$ref": "#/$defs/opaqueId" }
+      }
+    },
+    "productOptionSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "valueIds"],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "valueIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/opaqueId" }
+        }
+      }
+    },
+    "spreadCountRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max", "default"],
+      "properties": {
+        "min": { "type": "integer", "minimum": 1 },
+        "max": { "type": "integer", "minimum": 1 },
+        "default": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "productSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "productId",
+        "productType",
+        "productionStatus",
+        "coverSizeMm",
+        "spreadSizeMm",
+        "spreadCount",
+        "optionSpecs",
+        "allowedLayoutIds",
+        "allowedThemeIds",
+        "allowedTemplateIds",
+        "allowedTextRoles",
+        "allowedTextSizeTokens"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "productId": { "$ref": "#/$defs/opaqueId" },
+        "productType": { "const": "photo_book" },
+        "productionStatus": { "$ref": "#/$defs/productionStatus" },
+        "coverSizeMm": {
+          "$ref": "./book-document-v1.schema.json#/$defs/physicalSizeMm"
+        },
+        "spreadSizeMm": {
+          "$ref": "./book-document-v1.schema.json#/$defs/physicalSizeMm"
+        },
+        "spreadCount": { "$ref": "#/$defs/spreadCountRange" },
+        "optionSpecs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/productOptionSpec" }
+        },
+        "allowedLayoutIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/opaqueId" }
+        },
+        "allowedThemeIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/opaqueId" }
+        },
+        "allowedTemplateIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/opaqueId" }
+        },
+        "allowedTextRoles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/textRole" }
+        },
+        "allowedTextSizeTokens": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/textSizeToken" }
+        }
+      }
+    },
+    "layoutPhotoSlotSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slotKey",
+        "frameMm",
+        "required",
+        "defaultCrop",
+        "defaultFocalPoint"
+      ],
+      "properties": {
+        "slotKey": { "$ref": "#/$defs/opaqueId" },
+        "frameMm": {
+          "$ref": "./book-document-v1.schema.json#/$defs/physicalRectMm"
+        },
+        "required": { "type": "boolean" },
+        "defaultCrop": {
+          "$ref": "./book-document-v1.schema.json#/$defs/normalizedRect"
+        },
+        "defaultFocalPoint": {
+          "$ref": "./book-document-v1.schema.json#/$defs/normalizedPoint"
+        }
+      }
+    },
+    "layoutTextSlotSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slotKey",
+        "frameMm",
+        "required",
+        "allowedRoles",
+        "defaultTextStyleId",
+        "maxCharacters"
+      ],
+      "properties": {
+        "slotKey": { "$ref": "#/$defs/opaqueId" },
+        "frameMm": {
+          "$ref": "./book-document-v1.schema.json#/$defs/physicalRectMm"
+        },
+        "required": { "type": "boolean" },
+        "allowedRoles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/textRole" }
+        },
+        "defaultTextStyleId": { "$ref": "#/$defs/opaqueId" },
+        "maxCharacters": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "layoutSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "productionStatus",
+        "surface",
+        "supportedProductSpecIds",
+        "sizeMm",
+        "photoSlots",
+        "textSlots"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "productionStatus": { "$ref": "#/$defs/productionStatus" },
+        "surface": { "enum": ["cover", "spread"] },
+        "supportedProductSpecIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/opaqueId" }
+        },
+        "sizeMm": {
+          "$ref": "./book-document-v1.schema.json#/$defs/physicalSizeMm"
+        },
+        "photoSlots": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/layoutPhotoSlotSpec" }
+        },
+        "textSlots": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/layoutTextSlotSpec" }
+        }
+      }
+    },
+    "themeColorPalette": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["background", "foreground", "accent"],
+      "properties": {
+        "background": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        "foreground": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        "accent": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+      }
+    },
+    "textStyleSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "role",
+        "sizeToken",
+        "fontFamilyId",
+        "fontWeight",
+        "fontSizePt",
+        "lineHeight",
+        "textAlign",
+        "colorToken"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "role": { "$ref": "#/$defs/textRole" },
+        "sizeToken": { "$ref": "#/$defs/textSizeToken" },
+        "fontFamilyId": { "$ref": "#/$defs/opaqueId" },
+        "fontWeight": { "enum": [400, 500, 600] },
+        "fontSizePt": { "type": "number", "exclusiveMinimum": 0 },
+        "lineHeight": { "type": "number", "exclusiveMinimum": 0 },
+        "textAlign": { "enum": ["left", "center", "right"] },
+        "colorToken": { "enum": ["foreground", "accent"] }
+      }
+    },
+    "themeSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "productionStatus",
+        "supportedProductSpecIds",
+        "colors",
+        "textStyles"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "productionStatus": { "$ref": "#/$defs/productionStatus" },
+        "supportedProductSpecIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/opaqueId" }
+        },
+        "colors": { "$ref": "#/$defs/themeColorPalette" },
+        "textStyles": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/textStyleSpec" }
+        }
+      }
+    },
+    "templateSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "productionStatus",
+        "supportedProductSpecIds",
+        "themeId",
+        "categoryTags",
+        "coverLayoutId",
+        "initialSpreadLayoutIds"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "productionStatus": { "$ref": "#/$defs/productionStatus" },
+        "supportedProductSpecIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/opaqueId" }
+        },
+        "themeId": { "$ref": "#/$defs/opaqueId" },
+        "categoryTags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 64 }
+        },
+        "coverLayoutId": { "$ref": "#/$defs/opaqueId" },
+        "initialSpreadLayoutIds": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/opaqueId" }
+        }
+      }
+    },
+    "catalogVersionResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "catalogVersion",
+        "productSpecs",
+        "layoutSpecs",
+        "themeSpecs",
+        "templateSpecs"
+      ],
+      "properties": {
+        "catalogVersion": { "$ref": "#/$defs/opaqueId" },
+        "productSpecs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/productSpec" }
+        },
+        "layoutSpecs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/layoutSpec" }
+        },
+        "themeSpecs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/themeSpec" }
+        },
+        "templateSpecs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/templateSpec" }
+        }
+      }
+    },
+    "priceMoney": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amountMinor", "currency"],
+      "properties": {
+        "amountMinor": { "type": "integer", "minimum": 0 },
+        "currency": { "const": "KGS" }
+      }
+    },
+    "priceQuoteDelivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "city"],
+      "properties": {
+        "method": { "enum": ["pickup", "courier"] },
+        "city": { "const": "Bishkek" }
+      }
+    },
+    "priceQuoteRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "productId",
+        "productSpecId",
+        "catalogVersion",
+        "spreadCount",
+        "options",
+        "quantity",
+        "delivery"
+      ],
+      "properties": {
+        "productId": { "$ref": "#/$defs/opaqueId" },
+        "productSpecId": { "$ref": "#/$defs/opaqueId" },
+        "catalogVersion": { "$ref": "#/$defs/opaqueId" },
+        "spreadCount": { "type": "integer", "minimum": 1 },
+        "options": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/productOptionSelection" }
+        },
+        "quantity": { "const": 1 },
+        "delivery": { "$ref": "#/$defs/priceQuoteDelivery" }
+      }
+    },
+    "priceQuoteItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "label", "quantity", "unitPrice", "total"],
+      "properties": {
+        "code": { "enum": ["BOOK_BASE", "EXTRA_SPREADS"] },
+        "label": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "quantity": { "type": "integer", "minimum": 1 },
+        "unitPrice": { "$ref": "#/$defs/priceMoney" },
+        "total": { "$ref": "#/$defs/priceMoney" }
+      }
+    },
+    "priceQuote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "quoteId",
+        "expiresAt",
+        "items",
+        "total",
+        "estimatedReadyDate",
+        "priceStatus"
+      ],
+      "properties": {
+        "quoteId": { "$ref": "#/$defs/opaqueId" },
+        "expiresAt": { "$ref": "#/$defs/utcDateTime" },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/priceQuoteItem" }
+        },
+        "total": { "$ref": "#/$defs/priceMoney" },
+        "estimatedReadyDate": {
+          "anyOf": [{ "type": "string", "format": "date" }, { "type": "null" }]
+        },
+        "priceStatus": { "const": "provisional" }
+      }
+    },
+    "fieldError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "code", "message"],
+      "properties": {
+        "field": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "code": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "message": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "errorCode": {
+      "enum": [
+        "VALIDATION_FAILED",
+        "INTERNAL_ERROR",
+        "AUTH_REQUIRED",
+        "AUTH_CODE_INVALID",
+        "AUTH_CODE_EXPIRED",
+        "SESSION_EXPIRED",
+        "ACCESS_DENIED",
+        "CSRF_INVALID",
+        "RATE_LIMITED",
+        "EXTERNAL_PROVIDER_UNAVAILABLE",
+        "RESOURCE_NOT_FOUND",
+        "PROJECT_REVISION_CONFLICT",
+        "APPROVAL_REQUIRED",
+        "APPROVAL_OUTDATED",
+        "ASSET_UPLOAD_INCOMPLETE",
+        "IDEMPOTENCY_KEY_REUSED",
+        "CLIENT_MUTATION_ID_REUSED",
+        "CATALOG_VERSION_UNAVAILABLE",
+        "PRICE_QUOTE_INVALID",
+        "RENDER_PROFILE_UNAVAILABLE",
+        "RENDER_FAILED"
+      ]
+    },
+    "errorDetails": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "maxProperties": 1,
+      "properties": {
+        "catalogVersion": { "$ref": "#/$defs/opaqueId" },
+        "projectId": { "$ref": "#/$defs/opaqueId" },
+        "latestRevisionId": { "$ref": "#/$defs/opaqueId" },
+        "priceQuoteId": { "$ref": "#/$defs/opaqueId" }
+      }
+    },
+    "errorEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["error"],
+      "properties": {
+        "error": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "message",
+            "requestId",
+            "retryable",
+            "fieldErrors"
+          ],
+          "properties": {
+            "code": { "$ref": "#/$defs/errorCode" },
+            "message": { "type": "string", "minLength": 1, "maxLength": 500 },
+            "requestId": { "$ref": "#/$defs/opaqueId" },
+            "retryable": { "type": "boolean" },
+            "fieldErrors": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/fieldError" }
+            },
+            "details": { "$ref": "#/$defs/errorDetails" }
+          }
+        }
+      }
+    },
+    "projectStatus": {
+      "enum": [
+        "draft",
+        "awaiting_upload",
+        "uploading",
+        "editing",
+        "ready_for_review",
+        "approved",
+        "archived",
+        "deleted"
+      ]
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "ownerId",
+        "title",
+        "status",
+        "productId",
+        "templateId",
+        "categoryTags",
+        "catalogVersion",
+        "latestRevisionId",
+        "approvedRevisionId",
+        "coverPreviewUrl",
+        "createdAt",
+        "updatedAt",
+        "deletedAt"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "ownerId": { "$ref": "#/$defs/opaqueId" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "status": { "$ref": "#/$defs/projectStatus" },
+        "productId": { "$ref": "#/$defs/opaqueId" },
+        "templateId": { "$ref": "#/$defs/opaqueId" },
+        "categoryTags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 64 }
+        },
+        "catalogVersion": { "$ref": "#/$defs/opaqueId" },
+        "latestRevisionId": { "$ref": "#/$defs/opaqueId" },
+        "approvedRevisionId": {
+          "anyOf": [{ "$ref": "#/$defs/opaqueId" }, { "type": "null" }]
+        },
+        "coverPreviewUrl": {
+          "anyOf": [{ "type": "string", "format": "uri" }, { "type": "null" }]
+        },
+        "createdAt": { "$ref": "#/$defs/utcDateTime" },
+        "updatedAt": { "$ref": "#/$defs/utcDateTime" },
+        "deletedAt": {
+          "anyOf": [{ "$ref": "#/$defs/utcDateTime" }, { "type": "null" }]
+        }
+      }
+    },
+    "projectRevision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "projectId",
+        "revisionNumber",
+        "document",
+        "documentHash",
+        "createdAt"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "projectId": { "$ref": "#/$defs/opaqueId" },
+        "revisionNumber": { "type": "integer", "minimum": 1 },
+        "document": { "$ref": "./book-document-v1.schema.json" },
+        "documentHash": {
+          "type": "string",
+          "pattern": "^sha256:[A-Za-z0-9._-]+$"
+        },
+        "createdAt": { "$ref": "#/$defs/utcDateTime" }
+      }
+    },
+    "projectDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project", "latestRevision"],
+      "properties": {
+        "project": { "$ref": "#/$defs/project" },
+        "latestRevision": { "$ref": "#/$defs/projectRevision" }
+      }
+    },
+    "cursorPageInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nextCursor", "hasNextPage"],
+      "properties": {
+        "nextCursor": {
+          "anyOf": [
+            { "type": "string", "minLength": 1, "maxLength": 512 },
+            { "type": "null" }
+          ]
+        },
+        "hasNextPage": { "type": "boolean" }
+      }
+    },
+    "projectList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["items", "pageInfo"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/project" }
+        },
+        "pageInfo": { "$ref": "#/$defs/cursorPageInfo" }
+      }
+    },
+    "createProjectRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "productId",
+        "templateId",
+        "catalogVersion",
+        "categoryTags",
+        "spreadCount",
+        "optionSelections"
+      ],
+      "properties": {
+        "productId": { "$ref": "#/$defs/opaqueId" },
+        "templateId": { "$ref": "#/$defs/opaqueId" },
+        "catalogVersion": { "$ref": "#/$defs/opaqueId" },
+        "categoryTags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 64 }
+        },
+        "spreadCount": { "type": "integer", "minimum": 1 },
+        "optionSelections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/productOptionSelection" }
+        }
+      }
+    },
+    "uploadFileRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clientFileId",
+        "fileName",
+        "mediaType",
+        "sizeBytes",
+        "capturedAt"
+      ],
+      "properties": {
+        "clientFileId": { "$ref": "#/$defs/opaqueId" },
+        "fileName": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "mediaType": { "enum": ["image/jpeg", "image/png"] },
+        "sizeBytes": { "type": "integer", "minimum": 1, "maximum": 26214400 },
+        "capturedAt": {
+          "anyOf": [{ "$ref": "#/$defs/utcDateTime" }, { "type": "null" }]
+        }
+      }
+    },
+    "createUploadBatchRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["files"],
+      "properties": {
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": { "$ref": "#/$defs/uploadFileRequest" }
+        }
+      }
+    },
+    "uploadInstruction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clientFileId",
+        "assetId",
+        "method",
+        "uploadUrl",
+        "headers",
+        "expiresAt"
+      ],
+      "properties": {
+        "clientFileId": { "$ref": "#/$defs/opaqueId" },
+        "assetId": { "$ref": "#/$defs/opaqueId" },
+        "method": { "const": "PUT" },
+        "uploadUrl": { "type": "string", "format": "uri" },
+        "headers": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["Content-Type"],
+          "properties": {
+            "Content-Type": { "enum": ["image/jpeg", "image/png"] }
+          }
+        },
+        "expiresAt": { "$ref": "#/$defs/utcDateTime" }
+      }
+    },
+    "createUploadBatchResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["batchId", "uploads"],
+      "properties": {
+        "batchId": { "$ref": "#/$defs/opaqueId" },
+        "uploads": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": { "$ref": "#/$defs/uploadInstruction" }
+        }
+      }
+    },
+    "completeAssetUploadRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["etag", "sizeBytes", "sha256"],
+      "properties": {
+        "etag": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "sizeBytes": { "type": "integer", "minimum": 1, "maximum": 26214400 },
+        "sha256": {
+          "anyOf": [
+            { "type": "string", "pattern": "^sha256:[A-Za-z0-9._-]+$" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assetId",
+        "status",
+        "fileName",
+        "mediaType",
+        "sizeBytes",
+        "pixelWidth",
+        "pixelHeight",
+        "capturedAt",
+        "thumbnailUrl",
+        "thumbnailExpiresAt",
+        "createdAt"
+      ],
+      "properties": {
+        "assetId": { "$ref": "#/$defs/opaqueId" },
+        "status": {
+          "enum": [
+            "pending_upload",
+            "uploading",
+            "uploaded",
+            "processing",
+            "ready",
+            "failed",
+            "deleted"
+          ]
+        },
+        "fileName": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "mediaType": { "enum": ["image/jpeg", "image/png"] },
+        "sizeBytes": { "type": "integer", "minimum": 1 },
+        "pixelWidth": {
+          "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }]
+        },
+        "pixelHeight": {
+          "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }]
+        },
+        "capturedAt": {
+          "anyOf": [{ "$ref": "#/$defs/utcDateTime" }, { "type": "null" }]
+        },
+        "thumbnailUrl": {
+          "anyOf": [{ "type": "string", "format": "uri" }, { "type": "null" }]
+        },
+        "thumbnailExpiresAt": {
+          "anyOf": [{ "$ref": "#/$defs/utcDateTime" }, { "type": "null" }]
+        },
+        "createdAt": { "$ref": "#/$defs/utcDateTime" }
+      }
+    },
+    "assetList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["items"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 50,
+          "items": { "$ref": "#/$defs/asset" }
+        }
+      }
+    },
+    "saveProjectDocumentRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseRevisionId", "clientMutationId", "document"],
+      "properties": {
+        "baseRevisionId": { "$ref": "#/$defs/opaqueId" },
+        "clientMutationId": { "$ref": "#/$defs/opaqueId" },
+        "document": { "$ref": "./book-document-v1.schema.json" }
+      }
+    },
+    "saveProjectDocumentResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revisionId", "revisionNumber", "savedAt", "documentHash"],
+      "properties": {
+        "revisionId": { "$ref": "#/$defs/opaqueId" },
+        "revisionNumber": { "type": "integer", "minimum": 1 },
+        "savedAt": { "$ref": "#/$defs/utcDateTime" },
+        "documentHash": {
+          "type": "string",
+          "pattern": "^sha256:[A-Za-z0-9._-]+$"
+        }
+      }
+    },
+    "preflightRunRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revisionId"],
+      "properties": {
+        "revisionId": { "$ref": "#/$defs/opaqueId" }
+      }
+    },
+    "preflightIssueDetails": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "actualDpi": { "type": "integer", "minimum": 0 },
+        "requiredDpi": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "preflightIssue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "code",
+        "severity",
+        "surfaceId",
+        "elementId",
+        "messageKey",
+        "details"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+        "severity": { "enum": ["info", "warning", "blocking"] },
+        "surfaceId": {
+          "anyOf": [{ "$ref": "#/$defs/opaqueId" }, { "type": "null" }]
+        },
+        "elementId": {
+          "anyOf": [{ "$ref": "#/$defs/opaqueId" }, { "type": "null" }]
+        },
+        "messageKey": {
+          "type": "string",
+          "pattern": "^preflight\\.[A-Za-z][A-Za-z0-9.]*$"
+        },
+        "details": { "$ref": "#/$defs/preflightIssueDetails" }
+      }
+    },
+    "preflightRun": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "projectId",
+        "revisionId",
+        "status",
+        "issues",
+        "createdAt",
+        "completedAt"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "projectId": { "$ref": "#/$defs/opaqueId" },
+        "revisionId": { "$ref": "#/$defs/opaqueId" },
+        "status": { "enum": ["queued", "running", "succeeded", "failed"] },
+        "issues": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/preflightIssue" }
+        },
+        "createdAt": { "$ref": "#/$defs/utcDateTime" },
+        "completedAt": {
+          "anyOf": [{ "$ref": "#/$defs/utcDateTime" }, { "type": "null" }]
+        }
+      }
+    },
+    "approvalChecklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "namesChecked",
+        "datesChecked",
+        "captionsChecked",
+        "pageOrderChecked",
+        "cropUnderstood",
+        "readyForPrint"
+      ],
+      "properties": {
+        "namesChecked": { "type": "boolean" },
+        "datesChecked": { "type": "boolean" },
+        "captionsChecked": { "type": "boolean" },
+        "pageOrderChecked": { "type": "boolean" },
+        "cropUnderstood": { "type": "boolean" },
+        "readyForPrint": { "type": "boolean" }
+      }
+    },
+    "createApprovalRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revisionId",
+        "preflightRunId",
+        "checklist",
+        "acknowledgedWarningIds"
+      ],
+      "properties": {
+        "revisionId": { "$ref": "#/$defs/opaqueId" },
+        "preflightRunId": { "$ref": "#/$defs/opaqueId" },
+        "checklist": { "$ref": "#/$defs/approvalChecklist" },
+        "acknowledgedWarningIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/opaqueId" }
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "projectId",
+        "approvedRevisionId",
+        "preflightRunId",
+        "checklist",
+        "acknowledgedWarningIds",
+        "approvedAt"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "projectId": { "$ref": "#/$defs/opaqueId" },
+        "approvedRevisionId": { "$ref": "#/$defs/opaqueId" },
+        "preflightRunId": { "$ref": "#/$defs/opaqueId" },
+        "checklist": { "$ref": "#/$defs/approvalChecklist" },
+        "acknowledgedWarningIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/opaqueId" }
+        },
+        "approvedAt": { "$ref": "#/$defs/utcDateTime" }
+      }
+    },
+    "createRenderJobRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvalId", "type", "retryOfRenderJobId"],
+      "properties": {
+        "approvalId": { "$ref": "#/$defs/opaqueId" },
+        "type": { "const": "print_pdf" },
+        "retryOfRenderJobId": {
+          "anyOf": [{ "$ref": "#/$defs/opaqueId" }, { "type": "null" }]
+        }
+      }
+    },
+    "renderOutput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mediaType", "sizeBytes", "sha256", "pageCount"],
+      "properties": {
+        "mediaType": { "const": "application/pdf" },
+        "sizeBytes": { "type": "integer", "minimum": 1 },
+        "sha256": {
+          "type": "string",
+          "pattern": "^sha256:[A-Za-z0-9._-]+$"
+        },
+        "pageCount": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "renderFailure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "messageKey", "retryable"],
+      "properties": {
+        "code": { "const": "RENDER_FAILED" },
+        "messageKey": {
+          "type": "string",
+          "pattern": "^render\\.[A-Za-z][A-Za-z0-9.]*$"
+        },
+        "retryable": { "type": "boolean" }
+      }
+    },
+    "renderJob": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "projectId",
+        "approvalId",
+        "approvedRevisionId",
+        "type",
+        "status",
+        "attempt",
+        "renderProfileVersion",
+        "retryOfRenderJobId",
+        "output",
+        "failure",
+        "createdAt",
+        "startedAt",
+        "completedAt"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "projectId": { "$ref": "#/$defs/opaqueId" },
+        "approvalId": { "$ref": "#/$defs/opaqueId" },
+        "approvedRevisionId": { "$ref": "#/$defs/opaqueId" },
+        "type": { "const": "print_pdf" },
+        "status": {
+          "enum": ["queued", "running", "succeeded", "failed", "cancelled"]
+        },
+        "attempt": { "type": "integer", "minimum": 1 },
+        "renderProfileVersion": { "$ref": "#/$defs/opaqueId" },
+        "retryOfRenderJobId": {
+          "anyOf": [{ "$ref": "#/$defs/opaqueId" }, { "type": "null" }]
+        },
+        "output": {
+          "anyOf": [{ "$ref": "#/$defs/renderOutput" }, { "type": "null" }]
+        },
+        "failure": {
+          "anyOf": [{ "$ref": "#/$defs/renderFailure" }, { "type": "null" }]
+        },
+        "createdAt": { "$ref": "#/$defs/utcDateTime" },
+        "startedAt": {
+          "anyOf": [{ "$ref": "#/$defs/utcDateTime" }, { "type": "null" }]
+        },
+        "completedAt": {
+          "anyOf": [{ "$ref": "#/$defs/utcDateTime" }, { "type": "null" }]
+        }
+      }
+    },
+    "orderContact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "phone"],
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "phone": { "type": "string", "pattern": "^\\+[1-9][0-9]{7,14}$" }
+      }
+    },
+    "pickupDelivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "city", "address"],
+      "properties": {
+        "method": { "const": "pickup" },
+        "city": { "const": "Bishkek" },
+        "address": { "type": "null" }
+      }
+    },
+    "courierDelivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "city", "address"],
+      "properties": {
+        "method": { "const": "courier" },
+        "city": { "const": "Bishkek" },
+        "address": { "type": "string", "minLength": 5, "maxLength": 300 }
+      }
+    },
+    "orderDelivery": {
+      "oneOf": [
+        { "$ref": "#/$defs/pickupDelivery" },
+        { "$ref": "#/$defs/courierDelivery" }
+      ]
+    },
+    "createOrderRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectId",
+        "approvedRevisionId",
+        "priceQuoteId",
+        "quantity",
+        "contact",
+        "delivery",
+        "customerComment",
+        "approvedLayoutConfirmed",
+        "mockConditionsAcknowledged"
+      ],
+      "properties": {
+        "projectId": { "$ref": "#/$defs/opaqueId" },
+        "approvedRevisionId": { "$ref": "#/$defs/opaqueId" },
+        "priceQuoteId": { "$ref": "#/$defs/opaqueId" },
+        "quantity": { "const": 1 },
+        "contact": { "$ref": "#/$defs/orderContact" },
+        "delivery": { "$ref": "#/$defs/orderDelivery" },
+        "customerComment": {
+          "anyOf": [
+            { "type": "string", "minLength": 1, "maxLength": 500 },
+            { "type": "null" }
+          ]
+        },
+        "approvedLayoutConfirmed": { "const": true },
+        "mockConditionsAcknowledged": { "const": true }
+      }
+    },
+    "mockOrderPrice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amountMinor", "currency", "status"],
+      "properties": {
+        "amountMinor": { "type": "integer", "minimum": 0 },
+        "currency": { "const": "KGS" },
+        "status": { "const": "mock" }
+      }
+    },
+    "order": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "number",
+        "projectId",
+        "approvedRevisionId",
+        "priceQuoteId",
+        "status",
+        "quantity",
+        "contact",
+        "delivery",
+        "customerComment",
+        "price",
+        "createdAt",
+        "estimatedReadyAt"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "number": { "type": "string", "pattern": "^MOCK-[0-9]{4}$" },
+        "projectId": { "$ref": "#/$defs/opaqueId" },
+        "approvedRevisionId": { "$ref": "#/$defs/opaqueId" },
+        "priceQuoteId": { "$ref": "#/$defs/opaqueId" },
+        "status": {
+          "enum": [
+            "created",
+            "awaiting_payment",
+            "paid",
+            "preflight_check",
+            "in_production",
+            "binding",
+            "packaging",
+            "ready_for_pickup",
+            "out_for_delivery",
+            "completed",
+            "cancelled",
+            "reprint_required"
+          ]
+        },
+        "quantity": { "const": 1 },
+        "contact": { "$ref": "#/$defs/orderContact" },
+        "delivery": { "$ref": "#/$defs/orderDelivery" },
+        "customerComment": {
+          "anyOf": [
+            { "type": "string", "minLength": 1, "maxLength": 500 },
+            { "type": "null" }
+          ]
+        },
+        "price": { "$ref": "#/$defs/mockOrderPrice" },
+        "createdAt": { "$ref": "#/$defs/utcDateTime" },
+        "estimatedReadyAt": {
+          "anyOf": [{ "$ref": "#/$defs/utcDateTime" }, { "type": "null" }]
+        }
+      }
+    },
+    "orderList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["items", "pageInfo"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/order" }
+        },
+        "pageInfo": { "$ref": "#/$defs/cursorPageInfo" }
+      }
+    },
+    "operatorOrderDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "order",
+        "project",
+        "approvedRevision",
+        "approval",
+        "preflightRun"
+      ],
+      "properties": {
+        "order": { "$ref": "#/$defs/order" },
+        "project": { "$ref": "#/$defs/project" },
+        "approvedRevision": { "$ref": "#/$defs/operatorRevisionSummary" },
+        "approval": { "$ref": "#/$defs/approval" },
+        "preflightRun": { "$ref": "#/$defs/preflightRun" }
+      }
+    },
+    "operatorRevisionSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "projectId",
+        "revisionNumber",
+        "documentHash",
+        "createdAt"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/opaqueId" },
+        "projectId": { "$ref": "#/$defs/opaqueId" },
+        "revisionNumber": { "type": "integer", "minimum": 1 },
+        "documentHash": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "createdAt": { "$ref": "#/$defs/utcDateTime" }
+      }
+    }
+  }
+}

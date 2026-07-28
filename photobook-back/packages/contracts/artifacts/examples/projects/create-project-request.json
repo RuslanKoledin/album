@@ -1,0 +1,13 @@
+{
+  "productId": "mock-standard-hardcover",
+  "templateId": "mock-warm-family-story-v0",
+  "catalogVersion": "mock-catalog-v0",
+  "categoryTags": ["family"],
+  "spreadCount": 1,
+  "optionSelections": [
+    {
+      "optionId": "mock-cover-material",
+      "valueId": "mock-cover-material-sand"
+    }
+  ]
+}

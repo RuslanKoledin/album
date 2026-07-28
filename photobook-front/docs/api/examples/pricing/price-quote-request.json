@@ -1,0 +1,17 @@
+{
+  "productId": "mock-standard-hardcover",
+  "productSpecId": "mock-standard-hardcover-200x200-v0",
+  "catalogVersion": "mock-catalog-v0",
+  "spreadCount": 1,
+  "options": [
+    {
+      "optionId": "mock-cover-material",
+      "valueId": "mock-cover-material-sand"
+    }
+  ],
+  "quantity": 1,
+  "delivery": {
+    "method": "pickup",
+    "city": "Bishkek"
+  }
+}

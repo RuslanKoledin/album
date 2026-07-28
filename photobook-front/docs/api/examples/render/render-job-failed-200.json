@@ -1,0 +1,20 @@
+{
+  "id": "mock-render-job-failed-0001",
+  "projectId": "mock-project-0001",
+  "approvalId": "mock-approval-0001",
+  "approvedRevisionId": "mock-revision-0001",
+  "type": "print_pdf",
+  "status": "failed",
+  "attempt": 1,
+  "renderProfileVersion": "mock-print-profile-v0",
+  "retryOfRenderJobId": null,
+  "output": null,
+  "failure": {
+    "code": "RENDER_FAILED",
+    "messageKey": "render.generationFailed",
+    "retryable": true
+  },
+  "createdAt": "2026-07-23T09:00:00.000Z",
+  "startedAt": "2026-07-23T09:00:01.000Z",
+  "completedAt": "2026-07-23T09:00:05.000Z"
+}

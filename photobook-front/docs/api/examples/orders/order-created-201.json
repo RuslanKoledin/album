@@ -1,0 +1,26 @@
+{
+  "id": "mock-order-01",
+  "number": "MOCK-0001",
+  "projectId": "mock-project-01",
+  "approvedRevisionId": "mock-revision-01",
+  "priceQuoteId": "mock-price-quote-01",
+  "status": "created",
+  "quantity": 1,
+  "contact": {
+    "name": "Айжан",
+    "phone": "+996555123456"
+  },
+  "delivery": {
+    "method": "pickup",
+    "city": "Bishkek",
+    "address": null
+  },
+  "customerComment": null,
+  "price": {
+    "amountMinor": 350000,
+    "currency": "KGS",
+    "status": "mock"
+  },
+  "createdAt": "2026-07-22T07:00:00Z",
+  "estimatedReadyAt": null
+}

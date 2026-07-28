@@ -1,0 +1,11 @@
+.DS_Store
+.env*
+!.env.example
+node_modules/
+build/
+coverage/
+.react-router/
+.playwright-cli/
+photobook-front/output/playwright/
+photobook-back/packages/database/src/generated/
+*.log

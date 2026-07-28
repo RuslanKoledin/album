@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "metadata": { "title": "Семейная история" },
+  "productSelection": {
+    "productId": "mock-standard-hardcover",
+    "productSpecId": "mock-standard-hardcover-200x200-v0",
+    "catalogVersion": "mock-catalog-v0",
+    "templateId": "mock-warm-family-story-v0",
+    "themeId": "mock-warm-editorial-v0",
+    "optionSelections": []
+  },
+  "assets": [],
+  "cover": {
+    "layoutId": "mock-cover-layout-empty-v0",
+    "sizeMm": { "width": 200, "height": 200 },
+    "photoSlots": [],
+    "textBlocks": []
+  },
+  "spreads": [
+    {
+      "id": "mock-spread-01",
+      "layoutId": "mock-spread-layout-empty-v0",
+      "sizeMm": { "width": 400, "height": 200 },
+      "photoSlots": [],
+      "textBlocks": []
+    }
+  ],
+  "uiState": { "selectedSpreadId": "mock-spread-01" }
+}

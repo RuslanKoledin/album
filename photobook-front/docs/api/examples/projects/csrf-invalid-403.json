@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "CSRF_INVALID",
+    "message": "Сессия изменилась. Обновите страницу и попробуйте снова.",
+    "requestId": "mock-request-csrf-403",
+    "retryable": false,
+    "fieldErrors": []
+  }
+}

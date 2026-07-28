@@ -1,0 +1,24 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "description": "Frontend agent plugin for modular React, Next.js, UI governance, error UX startup audits, TanStack Router, TanStack Query, Zustand, and shadcn fallback workflows.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Frontend",
+    "shortDescription": "Modular React, Next.js, and error UX frontend agent.",
+    "longDescription": "Frontend provides local frontend-agent and frontend-error-ux skills with project architecture guardrails, React and Next.js patterns, 404/error modal/offline startup audits, UI component sourcing rules, frontend documentation governance, and verification checklists.",
+    "developerName": "Local developer",
+    "category": "Developer Tools",
+    "capabilities": ["Write", "Review", "Documentation"],
+    "defaultPrompt": [
+      "Use $frontend-agent to build a modular React screen.",
+      "Use $frontend-error-ux to audit 404, error modal, crash fallback, and offline blocker behavior.",
+      "Use $frontend-agent to review this frontend architecture.",
+      "Use $frontend-agent to plan a Next.js App Router feature."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

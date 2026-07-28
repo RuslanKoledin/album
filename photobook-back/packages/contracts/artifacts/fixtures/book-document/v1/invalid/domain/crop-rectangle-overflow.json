@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "metadata": {
+    "title": "Семейная история"
+  },
+  "productSelection": {
+    "productId": "mock-standard-hardcover",
+    "productSpecId": "mock-standard-hardcover-200x200-v0",
+    "catalogVersion": "mock-catalog-v0",
+    "templateId": "mock-warm-family-story-v0",
+    "themeId": "mock-warm-editorial-v0",
+    "optionSelections": [
+      {
+        "optionId": "mock-cover-material",
+        "valueId": "mock-cover-material-sand"
+      }
+    ]
+  },
+  "assets": [
+    { "assetId": "mock-asset-cover" },
+    { "assetId": "mock-asset-spread-01" }
+  ],
+  "cover": {
+    "layoutId": "mock-cover-layout-centered-photo-title-v0",
+    "sizeMm": { "width": 200, "height": 200 },
+    "photoSlots": [
+      {
+        "id": "mock-cover-photo-slot-01",
+        "layoutSlotKey": "cover-photo",
+        "frameMm": { "x": 10, "y": 10, "width": 180, "height": 140 },
+        "assetId": "mock-asset-cover",
+        "crop": { "x": 0, "y": 0, "width": 1, "height": 1 },
+        "focalPoint": { "x": 0.5, "y": 0.5 }
+      }
+    ],
+    "textBlocks": [
+      {
+        "id": "mock-cover-text-block-01",
+        "layoutSlotKey": "cover-title",
+        "frameMm": { "x": 20, "y": 160, "width": 160, "height": 20 },
+        "role": "title",
+        "textStyleId": "mock-title-style-v0",
+        "text": "Семейная история"
+      }
+    ]
+  },
+  "spreads": [
+    {
+      "id": "mock-spread-01",
+      "layoutId": "mock-spread-layout-full-bleed-v0",
+      "sizeMm": { "width": 400, "height": 200 },
+      "photoSlots": [
+        {
+          "id": "mock-spread-01-photo-slot-01",
+          "layoutSlotKey": "hero-photo",
+          "frameMm": { "x": 0, "y": 0, "width": 400, "height": 200 },
+          "assetId": "mock-asset-spread-01",
+          "crop": { "x": 0.5, "y": 0, "width": 0.6, "height": 1 },
+          "focalPoint": { "x": 0.5, "y": 0.5 }
+        }
+      ],
+      "textBlocks": []
+    }
+  ]
+}

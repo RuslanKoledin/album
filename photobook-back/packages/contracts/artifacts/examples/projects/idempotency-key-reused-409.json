@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "IDEMPOTENCY_KEY_REUSED",
+    "message": "Этот ключ уже использован с другими данными.",
+    "requestId": "mock-request-idempotency-409",
+    "retryable": false,
+    "fieldErrors": []
+  }
+}

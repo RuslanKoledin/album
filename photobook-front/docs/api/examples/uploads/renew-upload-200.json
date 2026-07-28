@@ -1,0 +1,10 @@
+{
+  "clientFileId": "mock-local-photo-01",
+  "assetId": "mock-asset-upload-01",
+  "method": "PUT",
+  "uploadUrl": "https://mock-storage.invalid/uploads/mock-asset-upload-01?token=mock-renewed-token-02",
+  "headers": {
+    "Content-Type": "image/jpeg"
+  },
+  "expiresAt": "2026-07-22T09:00:00Z"
+}

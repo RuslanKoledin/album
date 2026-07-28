@@ -1,0 +1,11 @@
+{
+  "user": {
+    "id": "mock-user-01",
+    "name": null,
+    "phone": "+996555123456",
+    "email": null,
+    "locale": "ru",
+    "profileCompleted": false
+  },
+  "csrfToken": "mock-csrf-token"
+}

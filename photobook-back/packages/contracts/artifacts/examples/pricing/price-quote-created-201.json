@@ -1,0 +1,25 @@
+{
+  "quoteId": "mock-price-quote-01",
+  "expiresAt": "2026-07-22T09:15:00Z",
+  "items": [
+    {
+      "code": "BOOK_BASE",
+      "label": "Фотокнига",
+      "quantity": 1,
+      "unitPrice": {
+        "amountMinor": 350000,
+        "currency": "KGS"
+      },
+      "total": {
+        "amountMinor": 350000,
+        "currency": "KGS"
+      }
+    }
+  ],
+  "total": {
+    "amountMinor": 350000,
+    "currency": "KGS"
+  },
+  "estimatedReadyDate": null,
+  "priceStatus": "provisional"
+}

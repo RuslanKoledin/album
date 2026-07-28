@@ -1,0 +1,15 @@
+{
+  "error": {
+    "code": "VALIDATION_FAILED",
+    "message": "Выбранные параметры книги несовместимы.",
+    "requestId": "mock-request-create-validation-422",
+    "retryable": false,
+    "fieldErrors": [
+      {
+        "field": "templateId",
+        "code": "TEMPLATE_NOT_COMPATIBLE",
+        "message": "Шаблон не подходит для выбранного продукта."
+      }
+    ]
+  }
+}

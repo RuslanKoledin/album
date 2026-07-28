@@ -1,0 +1,12 @@
+{
+  "error": {
+    "code": "PRICE_QUOTE_INVALID",
+    "message": "Тестовый расчёт устарел. Обновите его и повторите заказ.",
+    "requestId": "mock-order-price-quote-409",
+    "retryable": true,
+    "fieldErrors": [],
+    "details": {
+      "priceQuoteId": "mock-price-quote-01"
+    }
+  }
+}

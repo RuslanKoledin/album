@@ -1,0 +1,15 @@
+{
+  "error": {
+    "code": "VALIDATION_FAILED",
+    "message": "Проверьте номер телефона.",
+    "requestId": "mock-request-auth-validation-422",
+    "retryable": false,
+    "fieldErrors": [
+      {
+        "field": "contact",
+        "code": "PHONE_INVALID",
+        "message": "Введите номер в международном формате."
+      }
+    ]
+  }
+}

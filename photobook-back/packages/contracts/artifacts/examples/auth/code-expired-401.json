@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "AUTH_CODE_EXPIRED",
+    "message": "Срок действия кода закончился.",
+    "requestId": "mock-request-auth-expired-401",
+    "retryable": false,
+    "fieldErrors": []
+  }
+}

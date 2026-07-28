@@ -1,0 +1,15 @@
+{
+  "error": {
+    "code": "VALIDATION_FAILED",
+    "message": "Документ содержит недопустимые данные.",
+    "requestId": "mock-request-validation-422",
+    "retryable": false,
+    "fieldErrors": [
+      {
+        "field": "document.cover.layoutId",
+        "code": "UNKNOWN_LAYOUT",
+        "message": "Макет обложки отсутствует в выбранной версии каталога."
+      }
+    ]
+  }
+}

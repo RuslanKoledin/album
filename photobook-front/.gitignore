@@ -1,0 +1,10 @@
+.DS_Store
+.env*
+!.env.example
+node_modules/
+build/
+.react-router/
+coverage/
+.playwright-cli/
+output/playwright/
+*.log

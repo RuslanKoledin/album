@@ -1,0 +1,9 @@
+{
+  "id": "mock-preflight-01",
+  "projectId": "mock-project-01",
+  "revisionId": "mock-revision-01",
+  "status": "succeeded",
+  "issues": [],
+  "createdAt": "2026-07-22T06:00:00Z",
+  "completedAt": "2026-07-22T06:00:01Z"
+}

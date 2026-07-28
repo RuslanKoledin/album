@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Photobook React 19'
+  short_description: 'Compatibility router to Photobook frontend rules'
+  default_prompt: 'Use $react-19-frontend-agent for this Photobook React 19 task and follow the active frontend-agent decisions.'

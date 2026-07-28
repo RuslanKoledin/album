@@ -1,0 +1,23 @@
+{
+  "name": "react-19-frontend-agent",
+  "version": "0.1.0",
+  "description": "A React 19 frontend agent with strict TypeScript routing, component decomposition, state discipline, and Next.js App Router guidance.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "React 19 Frontend Agent",
+    "shortDescription": "React 19 architecture and typed routing.",
+    "longDescription": "A local frontend agent for React 19 projects. It enforces small component files, React reconciliation-aware state boundaries, TypeScript routing, and careful Next.js App Router usage only when SSR, SSG, RSC, metadata, or server rendering benefits are needed.",
+    "developerName": "Local developer",
+    "category": "Development",
+    "capabilities": ["Write", "Review"],
+    "defaultPrompt": [
+      "Use React 19 Frontend Agent for this frontend change.",
+      "Review this React 19 app architecture.",
+      "Add typed routes and split large components."
+    ],
+    "brandColor": "#0F766E"
+  }
+}

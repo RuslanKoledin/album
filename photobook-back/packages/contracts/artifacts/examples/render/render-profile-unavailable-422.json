@@ -1,0 +1,12 @@
+{
+  "error": {
+    "code": "RENDER_PROFILE_UNAVAILABLE",
+    "message": "Для продукта ещё не утверждены параметры печатного PDF.",
+    "requestId": "mock-request-render-422",
+    "retryable": false,
+    "fieldErrors": [],
+    "details": {
+      "projectId": "mock-project-0001"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "react-19-frontend-agent",
+  "description": "React 19 frontend agent with modular architecture, TanStack Router, TanStack Query, Zustand, shadcn fallback, UI governance, and Next.js App Router guidance.",
+  "author": {
+    "name": "Local developer"
+  }
+}

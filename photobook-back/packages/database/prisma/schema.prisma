@@ -1,0 +1,245 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProjectStatus {
+  DRAFT            @map("draft")
+  AWAITING_UPLOAD  @map("awaiting_upload")
+  UPLOADING        @map("uploading")
+  EDITING          @map("editing")
+  READY_FOR_REVIEW @map("ready_for_review")
+  APPROVED         @map("approved")
+  ARCHIVED         @map("archived")
+  DELETED          @map("deleted")
+
+  @@map("project_status")
+}
+
+enum AssetStatus {
+  PENDING_UPLOAD @map("pending_upload")
+  UPLOADING      @map("uploading")
+  UPLOADED       @map("uploaded")
+  PROCESSING     @map("processing")
+  READY          @map("ready")
+  FAILED         @map("failed")
+  DELETED        @map("deleted")
+
+  @@map("asset_status")
+}
+
+enum PreflightStatus {
+  QUEUED    @map("queued")
+  RUNNING   @map("running")
+  SUCCEEDED @map("succeeded")
+  FAILED    @map("failed")
+
+  @@map("preflight_status")
+}
+
+model User {
+  id               String    @id
+  phone            String    @unique
+  email            String?   @unique
+  name             String?
+  locale           String    @default("ru")
+  profileCompleted Boolean   @default(false) @map("profile_completed")
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt        DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  approvals Approval[]
+  projects  Project[]
+  revisions ProjectRevision[]
+  sessions  Session[]
+
+  @@map("users")
+}
+
+model AuthChallenge {
+  id                String    @id
+  contact           String
+  contactHash       String    @map("contact_hash")
+  requesterHash     String    @map("requester_hash")
+  codeHash          String    @map("code_hash")
+  locale            String
+  expiresAt         DateTime  @map("expires_at") @db.Timestamptz(3)
+  resendAvailableAt DateTime  @map("resend_available_at") @db.Timestamptz(3)
+  attemptCount      Int       @default(0) @map("attempt_count")
+  consumedAt        DateTime? @map("consumed_at") @db.Timestamptz(3)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([contactHash, createdAt])
+  @@index([requesterHash, createdAt])
+  @@map("auth_challenges")
+}
+
+model Session {
+  id            String    @id
+  userId        String    @map("user_id")
+  tokenHash     String    @unique @map("token_hash")
+  csrfTokenHash String    @map("csrf_token_hash")
+  expiresAt     DateTime  @map("expires_at") @db.Timestamptz(3)
+  invalidatedAt DateTime? @map("invalidated_at") @db.Timestamptz(3)
+  lastSeenAt    DateTime  @default(now()) @map("last_seen_at") @db.Timestamptz(3)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@map("sessions")
+}
+
+model CatalogVersion {
+  id          String    @id
+  contentHash String    @unique @map("content_hash")
+  payload     Json
+  publishedAt DateTime? @map("published_at") @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  projects Project[]
+
+  @@map("catalog_versions")
+}
+
+model Project {
+  id                 String        @id
+  ownerId            String        @map("owner_id")
+  catalogVersionId   String        @map("catalog_version_id")
+  productId          String        @map("product_id")
+  templateId         String        @map("template_id")
+  title              String
+  status             ProjectStatus @default(DRAFT)
+  categoryTags       String[]      @default([]) @map("category_tags")
+  latestRevisionId   String?       @unique @map("latest_revision_id")
+  approvedRevisionId String?       @unique @map("approved_revision_id")
+  createdAt          DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt          DateTime?     @map("deleted_at") @db.Timestamptz(3)
+
+  approvedRevision ProjectRevision?  @relation("ProjectApprovedRevision", fields: [approvedRevisionId], references: [id], onDelete: Restrict)
+  approvals        Approval[]
+  assets           Asset[]
+  catalogVersion   CatalogVersion    @relation(fields: [catalogVersionId], references: [id], onDelete: Restrict)
+  latestRevision   ProjectRevision?  @relation("ProjectLatestRevision", fields: [latestRevisionId], references: [id], onDelete: Restrict)
+  owner            User              @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  preflightRuns    PreflightRun[]
+  revisions        ProjectRevision[] @relation("ProjectRevisions")
+
+  @@index([ownerId, updatedAt])
+  @@index([status])
+  @@map("projects")
+}
+
+model ProjectRevision {
+  id               String   @id
+  projectId        String   @map("project_id")
+  revisionNumber   Int      @map("revision_number")
+  baseRevisionId   String?  @map("base_revision_id")
+  clientMutationId String?  @map("client_mutation_id")
+  requestHash      String?  @map("request_hash")
+  document         Json
+  documentHash     String   @map("document_hash")
+  createdByUserId  String   @map("created_by_user_id")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  approvedByProject Project?          @relation("ProjectApprovedRevision")
+  approvals         Approval[]        @relation("ApprovalRevision")
+  baseRevision      ProjectRevision?  @relation("RevisionLineage", fields: [baseRevisionId], references: [id], onDelete: Restrict)
+  childRevisions    ProjectRevision[] @relation("RevisionLineage")
+  createdBy         User              @relation(fields: [createdByUserId], references: [id], onDelete: Restrict)
+  latestForProject  Project?          @relation("ProjectLatestRevision")
+  preflightRuns     PreflightRun[]
+  project           Project           @relation("ProjectRevisions", fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, revisionNumber])
+  @@unique([projectId, clientMutationId])
+  @@unique([id, projectId])
+  @@index([projectId, createdAt])
+  @@map("project_revisions")
+}
+
+model Asset {
+  id               String      @id
+  projectId        String      @map("project_id")
+  clientFileId     String      @map("client_file_id")
+  status           AssetStatus @default(PENDING_UPLOAD)
+  originalFileName String      @map("original_file_name")
+  objectKey        String      @unique @map("object_key")
+  mediaType        String      @map("media_type")
+  expectedSize     BigInt      @map("expected_size")
+  storedSize       BigInt?     @map("stored_size")
+  etag             String?
+  sha256           String?
+  pixelWidth       Int?        @map("pixel_width")
+  pixelHeight      Int?        @map("pixel_height")
+  capturedAt       DateTime?   @map("captured_at") @db.Timestamptz(3)
+  createdAt        DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt        DateTime?   @map("deleted_at") @db.Timestamptz(3)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, clientFileId])
+  @@index([projectId, status])
+  @@map("assets")
+}
+
+model PreflightRun {
+  id          String          @id
+  projectId   String          @map("project_id")
+  revisionId  String          @map("revision_id")
+  status      PreflightStatus
+  issues      Json
+  createdAt   DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  completedAt DateTime?       @map("completed_at") @db.Timestamptz(3)
+
+  approvals Approval[]
+  project   Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  revision  ProjectRevision @relation(fields: [revisionId, projectId], references: [id, projectId], onDelete: Restrict)
+
+  @@unique([id, projectId, revisionId])
+  @@index([projectId, revisionId, createdAt])
+  @@map("preflight_runs")
+}
+
+model Approval {
+  id                     String   @id
+  projectId              String   @map("project_id")
+  approvedRevisionId     String   @unique @map("approved_revision_id")
+  preflightRunId         String   @unique @map("preflight_run_id")
+  approvedByUserId       String   @map("approved_by_user_id")
+  checklist              Json
+  acknowledgedWarningIds String[] @default([]) @map("acknowledged_warning_ids")
+  requestHash            String   @map("request_hash")
+  approvedAt             DateTime @default(now()) @map("approved_at") @db.Timestamptz(3)
+
+  approvedBy       User            @relation(fields: [approvedByUserId], references: [id], onDelete: Restrict)
+  approvedRevision ProjectRevision @relation("ApprovalRevision", fields: [approvedRevisionId, projectId], references: [id, projectId], onDelete: Restrict)
+  preflightRun     PreflightRun    @relation(fields: [preflightRunId, projectId, approvedRevisionId], references: [id, projectId, revisionId], onDelete: Restrict)
+  project          Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, approvedAt])
+  @@map("approvals")
+}
+
+model IdempotencyRecord {
+  id          String   @id
+  scope       String
+  key         String
+  requestHash String   @map("request_hash")
+  statusCode  Int      @map("status_code")
+  response    Json
+  expiresAt   DateTime @map("expires_at") @db.Timestamptz(3)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@unique([scope, key])
+  @@index([expiresAt])
+  @@map("idempotency_records")
+}

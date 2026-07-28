@@ -1,0 +1,13 @@
+{
+  "revisionId": "mock-revision-01",
+  "preflightRunId": "mock-preflight-01",
+  "checklist": {
+    "namesChecked": true,
+    "datesChecked": true,
+    "captionsChecked": true,
+    "pageOrderChecked": true,
+    "cropUnderstood": true,
+    "readyForPrint": true
+  },
+  "acknowledgedWarningIds": []
+}
