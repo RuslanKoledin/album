@@ -21,30 +21,49 @@ interface UploadSignedFileArgs {
   readonly onProgress: (progress: number) => void
 }
 
+type MockStorageUploadResult =
+  | { readonly kind: 'success'; readonly etag: string }
+  | { readonly kind: 'expired' | 'not_found' | 'rejected' | 'size_mismatch' }
+
+interface MockStorageUploadArgs {
+  readonly assetId: string
+  readonly file: File
+  readonly token: string | null
+}
+
+declare global {
+  var __PHOTOBOOK_MOCK_STORAGE_UPLOAD__:
+    | ((args: MockStorageUploadArgs) => Promise<MockStorageUploadResult>)
+    | undefined
+}
+
 const uploadMockStorageFile = async ({
   file,
   instruction,
   signal,
   onProgress,
 }: UploadSignedFileArgs): Promise<SignedUploadResult> => {
+  const uploadObject = globalThis.__PHOTOBOOK_MOCK_STORAGE_UPLOAD__
+  if (!uploadObject) throw new SignedUploadError('network')
+  if (signal.aborted) throw new SignedUploadError('aborted')
+
   try {
-    const response = await fetch(instruction.uploadUrl, {
-      method: instruction.method,
-      headers: instruction.headers,
-      body: file,
-      signal,
+    const token = new URL(instruction.uploadUrl).searchParams.get('token')
+    const result = await uploadObject({
+      assetId: instruction.assetId,
+      file,
+      token,
     })
-    if (response.status === 401 || response.status === 403) {
+
+    if (result.kind === 'expired') {
       throw new SignedUploadError('expired')
     }
-    if (!response.ok) throw new SignedUploadError('rejected')
-    const etag = response.headers.get('ETag') ?? (await response.text()).trim()
-    if (!etag) throw new SignedUploadError('rejected')
+    if (result.kind !== 'success') throw new SignedUploadError('rejected')
+
     onProgress(100)
-    return { etag }
+    return { etag: result.etag }
   } catch (error) {
     if (error instanceof SignedUploadError) throw error
-    if (signal.aborted) throw new SignedUploadError('aborted')
     throw new SignedUploadError('network')
   }
 }

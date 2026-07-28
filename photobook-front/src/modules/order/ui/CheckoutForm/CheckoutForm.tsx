@@ -99,9 +99,7 @@ export function CheckoutForm({
       </div>
 
       <fieldset className="mt-7">
-        <legend className="text-sm font-semibold">
-          Как получить в Бишкеке
-        </legend>
+        <legend className="text-sm font-semibold">Как получить в Бишкеке</legend>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           {deliveryOptions.map(([method, label, description]) => (
             <label
