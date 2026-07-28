@@ -39,7 +39,7 @@ export function CreateProjectSummary({
       <dl className="mt-5 space-y-4 text-sm">
         <div>
           <dt className="text-ink-500">Продукт</dt>
-          <dd className="mt-1 font-semibold">
+          <dd className="mt-1 min-h-5 font-semibold">
             {selection.productSpec
               ? CREATE_PRESENTATION.productName
               : 'Не выбран'}
@@ -47,7 +47,7 @@ export function CreateProjectSummary({
         </div>
         <div>
           <dt className="text-ink-500">Шаблон</dt>
-          <dd className="mt-1 font-semibold">
+          <dd className="mt-1 min-h-5 font-semibold">
             {selection.template
               ? CREATE_PRESENTATION.templateName
               : 'Не выбран'}
@@ -55,7 +55,7 @@ export function CreateProjectSummary({
         </div>
         <div>
           <dt className="text-ink-500">История</dt>
-          <dd className="mt-1 font-semibold">
+          <dd className="mt-1 min-h-5 font-semibold">
             {categoryLabels.length > 0
               ? categoryLabels.join(', ')
               : 'Без категории'}
@@ -63,7 +63,7 @@ export function CreateProjectSummary({
         </div>
         <div>
           <dt className="text-ink-500">Комплектация</dt>
-          <dd className="mt-1 font-semibold">
+          <dd className="mt-1 min-h-5 font-semibold">
             {selection.spreadCount !== null
               ? `${formatSpreadCount(selection.spreadCount)}, ${COVER_VALUE_LABELS[selection.coverValueId ?? ''] ?? 'обложка по умолчанию'}`
               : 'После выбора продукта'}
@@ -71,7 +71,7 @@ export function CreateProjectSummary({
         </div>
         <div>
           <dt className="text-ink-500">Фотографии</dt>
-          <dd className="mt-1 font-semibold">
+          <dd className="mt-1 min-h-5 font-semibold">
             {selection.photoSetId === LOCAL_PHOTO_SET_ID
               ? `${localPhotoCount} с устройства`
               : selection.photoSetId === SEEDED_PHOTO_SET.id
@@ -84,7 +84,7 @@ export function CreateProjectSummary({
       {selection.step !== 'details' ? (
         <div className="mt-6 border-t border-border pt-5">
           <p className="text-sm text-ink-500">Ориентировочная цена</p>
-          <p className="mt-1 font-serif text-3xl">
+          <p className="mt-1 min-h-9 font-serif text-3xl tabular-nums">
             {isPriceLoading
               ? 'Считаем…'
               : priceEstimate

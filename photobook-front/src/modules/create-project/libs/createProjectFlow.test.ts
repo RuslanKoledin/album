@@ -119,22 +119,42 @@ describe('create project flow', () => {
     expect(request).not.toHaveProperty('files')
   })
 
-  it('binds uploaded assets without carrying seeded slot assignments', () => {
+  it('binds uploaded assets to photo slots in reading order', () => {
     const source = createMinimalBookDocumentV1Fixture()
     const uploaded = createUploadedPhotoDocument(source, [
       'asset-uploaded-1',
       'asset-uploaded-2',
+      'asset-uploaded-extra',
     ])
 
     expect(uploaded.assets).toEqual([
       { assetId: 'asset-uploaded-1' },
       { assetId: 'asset-uploaded-2' },
+      { assetId: 'asset-uploaded-extra' },
     ])
     const photoSlots = [
       ...uploaded.cover.photoSlots,
       ...uploaded.spreads.flatMap(({ photoSlots }) => photoSlots),
     ]
 
-    expect(photoSlots.every(({ assetId }) => assetId === null)).toBe(true)
+    expect(photoSlots.map(({ assetId }) => assetId)).toEqual([
+      'asset-uploaded-1',
+      'asset-uploaded-2',
+    ])
+  })
+
+  it('leaves remaining photo slots empty when fewer files are uploaded', () => {
+    const source = createMinimalBookDocumentV1Fixture()
+    const uploaded = createUploadedPhotoDocument(source, ['asset-uploaded-1'])
+
+    const photoSlots = [
+      ...uploaded.cover.photoSlots,
+      ...uploaded.spreads.flatMap(({ photoSlots }) => photoSlots),
+    ]
+
+    expect(photoSlots.map(({ assetId }) => assetId)).toEqual([
+      'asset-uploaded-1',
+      null,
+    ])
   })
 })

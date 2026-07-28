@@ -54,7 +54,7 @@ export function CreateTemplateStep({
             return (
               <label
                 key={category.id}
-                className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-medium focus-within:outline-2 focus-within:outline-offset-3 focus-within:outline-accent-600 ${
+                className={`relative inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-medium focus-within:outline-2 focus-within:outline-offset-3 focus-within:outline-accent-600 ${
                   isSelected
                     ? 'border-accent-600 bg-accent-50 text-accent-700'
                     : 'border-border bg-surface text-ink-700 hover:border-control-border'
@@ -62,11 +62,16 @@ export function CreateTemplateStep({
               >
                 <input
                   checked={isSelected}
-                  className="sr-only"
+                  className="absolute inset-0 cursor-pointer opacity-0"
                   type="checkbox"
                   onChange={() => onToggleCategory(category.id)}
                 />
-                {isSelected ? <FiCheck aria-hidden="true" /> : null}
+                <span className="grid size-4 shrink-0 place-items-center">
+                  <FiCheck
+                    aria-hidden="true"
+                    className={isSelected ? 'opacity-100' : 'opacity-0'}
+                  />
+                </span>
                 {category.label}
               </label>
             )
@@ -153,14 +158,12 @@ export function CreateTemplateStep({
           Назад
         </button>
         <button
-          className="min-h-12 rounded-full bg-ink-950 px-6 text-sm font-semibold text-surface hover:bg-accent-700 disabled:bg-ink-300"
+          className="min-h-12 min-w-56 rounded-full bg-ink-950 px-6 text-sm font-semibold text-surface hover:bg-accent-700 disabled:bg-ink-300"
           disabled={!selectedTemplateId}
           type="button"
           onClick={onContinue}
         >
-          {categoryTags.length > 0
-            ? 'Продолжить к настройкам'
-            : 'Пропустить и продолжить'}
+          Продолжить к настройкам
         </button>
       </div>
     </section>

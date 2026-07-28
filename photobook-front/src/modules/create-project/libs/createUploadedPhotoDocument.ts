@@ -1,18 +1,29 @@
 import type { BookDocumentV1, BookSurface } from '@core/book'
 
-const clearSurfacePhotos = <TSurface extends BookSurface>(
+const assignSurfacePhotos = <TSurface extends BookSurface>(
   surface: TSurface,
+  getNextAssetId: () => string | null,
 ) => ({
   ...surface,
-  photoSlots: surface.photoSlots.map((slot) => ({ ...slot, assetId: null })),
+  photoSlots: surface.photoSlots.map((slot) => ({
+    ...slot,
+    assetId: getNextAssetId(),
+  })),
 })
 
 export const createUploadedPhotoDocument = (
   document: BookDocumentV1,
   assetIds: readonly string[],
-): BookDocumentV1 => ({
-  ...document,
-  assets: assetIds.map((assetId) => ({ assetId })),
-  cover: clearSurfacePhotos(document.cover),
-  spreads: document.spreads.map(clearSurfacePhotos),
-})
+): BookDocumentV1 => {
+  let assetIndex = 0
+  const getNextAssetId = () => assetIds[assetIndex++] ?? null
+
+  return {
+    ...document,
+    assets: assetIds.map((assetId) => ({ assetId })),
+    cover: assignSurfacePhotos(document.cover, getNextAssetId),
+    spreads: document.spreads.map((spread) =>
+      assignSurfacePhotos(spread, getNextAssetId),
+    ),
+  }
+}

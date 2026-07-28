@@ -74,14 +74,14 @@ export function CreatePhotoStep({
     ? isCreating
       ? 'Создаём проект…'
       : uploadAllReady
-        ? 'Открыть редактор'
+        ? 'Сохранить фото и открыть редактор'
         : uploadBatchFailed
           ? 'Повторить подготовку загрузки'
           : isSubmitting
             ? `Загружено ${uploadReadyCount} из ${localPhotos.length}`
             : uploadHasStarted
               ? 'Повторите файлы с ошибкой'
-              : `Загрузить ${localPhotos.length} фото`
+              : `Загрузить ${localPhotos.length} фото в книгу`
     : isCreating
       ? 'Создаём проект…'
       : 'Создать и открыть редактор'
@@ -98,9 +98,9 @@ export function CreatePhotoStep({
         Выберите фотографии для книги
       </h1>
       <p className="mt-4 max-w-2xl leading-7 text-ink-700">
-        Загрузите свои JPEG или PNG либо сначала откройте редактор с
-        демонстрационным набором. Личные файлы отправятся только после нажатия
-        кнопки загрузки.
+        Загрузите JPEG или PNG с устройства. После загрузки первые фотографии
+        сразу попадут на обложку и развороты, а остальные останутся в библиотеке
+        редактора.
       </p>
 
       <LocalPhotoSelectionPanel

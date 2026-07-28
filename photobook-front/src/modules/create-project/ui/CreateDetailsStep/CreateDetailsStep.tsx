@@ -112,7 +112,7 @@ export function CreateDetailsStep({
           >
             <FiMinus aria-hidden="true" />
           </button>
-          <output className="min-w-32 text-center font-serif text-2xl">
+          <output className="min-w-40 text-center font-serif text-2xl tabular-nums">
             {formatSpreadCount(spreadCount)}
           </output>
           <button
@@ -129,7 +129,7 @@ export function CreateDetailsStep({
 
       <div className="mt-6 rounded-3xl bg-ink-950 p-6 text-surface">
         <p className="text-sm text-paper-200">Beta-расчёт стоимости</p>
-        <p className="mt-2 font-serif text-4xl">
+        <p className="mt-2 min-h-11 font-serif text-4xl tabular-nums">
           {isPriceLoading
             ? 'Считаем…'
             : priceEstimate
