@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { startTransition, useEffect, useMemo } from 'react'
 import { skipToken } from '@reduxjs/toolkit/query'
 import { useSearchParams } from 'react-router'
 
@@ -51,7 +51,9 @@ export const useCreateProjectFlow = (catalog: BookConfigurationBundle) => {
   const updateSearch = (update: (next: URLSearchParams) => void) => {
     const next = new URLSearchParams(searchParams)
     update(next)
-    setSearchParams(next, { preventScrollReset: true, replace: true })
+    startTransition(() =>
+      setSearchParams(next, { preventScrollReset: true, replace: true }),
+    )
   }
 
   useEffect(() => {
@@ -71,7 +73,9 @@ export const useCreateProjectFlow = (catalog: BookConfigurationBundle) => {
     if (next.get('step') !== selection.step) next.set('step', selection.step)
     if (next.toString() === searchParams.toString()) return
 
-    setSearchParams(next, { preventScrollReset: true, replace: true })
+    startTransition(() =>
+      setSearchParams(next, { preventScrollReset: true, replace: true }),
+    )
   }, [searchParams, selection, setSearchParams])
 
   const goToStep = (step: CreateProjectStep) => {

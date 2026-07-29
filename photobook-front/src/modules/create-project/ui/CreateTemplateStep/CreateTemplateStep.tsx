@@ -63,7 +63,9 @@ export function CreateTemplateStep({
                 <input
                   checked={isSelected}
                   className="absolute inset-0 cursor-pointer opacity-0"
+                  name="category"
                   type="checkbox"
+                  value={category.id}
                   onChange={() => onToggleCategory(category.id)}
                 />
                 <span className="grid size-4 shrink-0 place-items-center">

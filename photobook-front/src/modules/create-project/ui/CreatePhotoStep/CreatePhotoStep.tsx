@@ -81,7 +81,7 @@ export function CreatePhotoStep({
             ? `Загружено ${uploadReadyCount} из ${localPhotos.length}`
             : uploadHasStarted
               ? 'Повторите файлы с ошибкой'
-              : `Загрузить ${localPhotos.length} фото в книгу`
+              : `Загрузить ${localPhotos.length} фото и открыть редактор`
     : isCreating
       ? 'Создаём проект…'
       : 'Создать и открыть редактор'

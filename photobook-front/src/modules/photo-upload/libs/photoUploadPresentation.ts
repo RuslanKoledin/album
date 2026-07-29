@@ -5,9 +5,9 @@ const STATUS_LABELS: Readonly<Record<PhotoUploadItem['phase'], string>> = {
   uploading: 'Загружаем оригинал',
   confirming: 'Подтверждаем файл',
   ready: 'Загружено',
-  paused: 'Загрузка остановлена — файл сохранён',
-  expired: 'Ссылка устарела — файл сохранён',
-  failed: 'Не удалось загрузить — файл сохранён',
+  paused: 'Загрузка остановлена — файл доступен в этой вкладке',
+  expired: 'Ссылка устарела — нажмите «Повторить загрузку»',
+  failed: 'Не удалось загрузить — нажмите «Повторить загрузку»',
 }
 
 export const getPhotoUploadStatusLabel = (item: PhotoUploadItem) =>

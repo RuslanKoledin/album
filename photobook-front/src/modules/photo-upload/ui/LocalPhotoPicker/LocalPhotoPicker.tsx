@@ -1,4 +1,4 @@
-import { useId, useState, type DragEvent } from 'react'
+import { useId, useRef, useState, type DragEvent } from 'react'
 import { FiImage, FiUploadCloud } from 'react-icons/fi'
 
 import { LOCAL_PHOTO_ACCEPT } from '@photo-upload/model'
@@ -16,6 +16,7 @@ export function LocalPhotoPicker({
 }: LocalPhotoPickerProps) {
   const inputId = useId()
   const descriptionId = `${inputId}-description`
+  const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const addFileList = (files: FileList | null) => {
     if (files) onAddFiles([...files])
@@ -63,20 +64,25 @@ export function LocalPhotoPicker({
         или перетащить их сюда.
       </p>
       {!disabled ? (
-        <label
-          className="mt-5 inline-flex min-h-12 cursor-pointer items-center justify-center rounded-full bg-ink-950 px-6 text-sm font-semibold text-surface focus-within:outline-2 focus-within:outline-offset-3 focus-within:outline-accent-600 hover:bg-accent-700"
-          htmlFor={inputId}
+        <button
+          aria-describedby={descriptionId}
+          className="mt-5 inline-flex min-h-12 cursor-pointer items-center justify-center rounded-full bg-ink-950 px-6 text-sm font-semibold text-surface hover:bg-accent-700 focus:outline-2 focus:outline-offset-3 focus:outline-accent-600"
+          type="button"
+          onClick={() => inputRef.current?.click()}
         >
           Открыть галерею
-        </label>
+        </button>
       ) : null}
       <input
+        ref={inputRef}
         multiple
         accept={LOCAL_PHOTO_ACCEPT}
+        aria-label="Выбрать фотографии для книги"
         aria-describedby={descriptionId}
         className="sr-only"
         disabled={disabled}
         id={inputId}
+        name="localPhotos"
         type="file"
         onChange={(event) => {
           addFileList(event.currentTarget.files)

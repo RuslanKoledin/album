@@ -68,12 +68,15 @@ export const useCheckoutForm = (projectId: string) => {
   }, [form.deliveryMethod, isApproved, revision])
   const priceQuoteQuery = useCreatePriceQuoteQuery(priceRequest ?? skipToken)
   const priceQuote = priceQuoteQuery.currentData
-  const errors = submitted ? getCheckoutFormErrors(form) : {}
+  const currentErrors = getCheckoutFormErrors(form)
+  const errors = submitted ? currentErrors : {}
   const canSubmit = Boolean(
     isOnline &&
     isApproved &&
+    sessionQuery.data?.authenticated &&
     form.approvedLayoutConfirmed &&
     form.mockConditionsAcknowledged &&
+    Object.keys(currentErrors).length === 0 &&
     priceQuote &&
     !priceQuoteQuery.isFetching &&
     !mutation.isLoading,

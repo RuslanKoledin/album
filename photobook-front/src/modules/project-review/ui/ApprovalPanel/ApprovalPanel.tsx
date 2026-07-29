@@ -52,6 +52,19 @@ export function ApprovalPanel({
     ({ key }) => checklist[key],
   ).length
   const totalItemsCount = APPROVAL_CHECKLIST_ITEMS.length
+  const hasUnacknowledgedWarnings =
+    serverWarnings.length > 0 && !warningsAcknowledged
+  const checklistComplete = checkedItemsCount === totalItemsCount
+  const checklistStatus = checklistComplete
+    ? hasUnacknowledgedWarnings
+      ? 'Все пункты макета отмечены. Осталось подтвердить рекомендации ниже.'
+      : 'Все обязательные пункты отмечены. Можно утверждать макет.'
+    : `Отмечено ${checkedItemsCount} из ${totalItemsCount}. Кнопка оформления откроется после всех обязательных пунктов.`
+  const approveLabel = isSubmitting
+    ? 'Проверяем макет…'
+    : hasUnacknowledgedWarnings
+      ? 'Подтвердите рекомендации'
+      : 'Утвердить для beta-заявки'
 
   return (
     <aside className="min-w-0 rounded-4xl border border-border bg-surface p-6 shadow-surface lg:sticky lg:top-6">
@@ -73,10 +86,7 @@ export function ApprovalPanel({
 
       <fieldset className="mt-6 space-y-2">
         <legend className="mb-3 text-sm font-semibold">Я проверил макет</legend>
-        <p className="mb-2 text-xs leading-5 text-ink-500">
-          Отмечено {checkedItemsCount} из {totalItemsCount}. Кнопка оформления
-          откроется после всех обязательных пунктов.
-        </p>
+        <p className="mb-2 text-xs leading-5 text-ink-500">{checklistStatus}</p>
         {APPROVAL_CHECKLIST_ITEMS.map(({ key, label }) => (
           <label
             className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl px-2 text-sm hover:bg-paper-100"
@@ -104,6 +114,7 @@ export function ApprovalPanel({
             <input
               checked={warningsAcknowledged}
               className="mt-1 size-5 shrink-0 accent-ink-950"
+              name="warningsAcknowledged"
               type="checkbox"
               onChange={(event) =>
                 onWarningsAcknowledgedChange(event.currentTarget.checked)
@@ -132,7 +143,7 @@ export function ApprovalPanel({
         type="button"
         onClick={onApprove}
       >
-        {isSubmitting ? 'Проверяем макет…' : 'Утвердить для beta-заявки'}
+        {approveLabel}
       </button>
       <p className="mt-3 text-center text-xs leading-5 text-ink-500">
         Утверждение фиксирует именно эту версию макета.

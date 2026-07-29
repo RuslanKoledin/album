@@ -16,6 +16,10 @@ interface StartProjectPhotoUploadArgs {
   readonly photos: readonly LocalPhotoPreview[]
 }
 
+type ProjectPhotoUploadResult =
+  | { readonly kind: 'ready'; readonly assetIds: readonly string[] }
+  | { readonly kind: 'failed' }
+
 const createQueueItems = (photos: readonly LocalPhotoPreview[]) =>
   photos.map<PhotoUploadItem>(({ id }) => ({
     assetId: null,
@@ -54,8 +58,8 @@ export function useProjectPhotoUpload({
   const start = async ({
     projectId: nextProjectId,
     photos,
-  }: StartProjectPhotoUploadArgs) => {
-    if (!csrfToken || photos.length === 0) return
+  }: StartProjectPhotoUploadArgs): Promise<ProjectPhotoUploadResult> => {
+    if (!csrfToken || photos.length === 0) return { kind: 'failed' }
     const body = createUploadBatchRequest(photos)
     const fingerprint = JSON.stringify({ projectId: nextProjectId, body })
     if (idempotency.current?.fingerprint !== fingerprint) {
@@ -88,6 +92,17 @@ export function useProjectPhotoUpload({
       await runUploadPool(response.uploads, (instruction) =>
         signedUpload.upload(nextProjectId, instruction),
       )
+      const readyItems = itemsRef.current.filter(
+        ({ assetId, phase }) => phase === 'ready' && assetId,
+      )
+      if (readyItems.length !== photos.length) return { kind: 'failed' }
+
+      return {
+        kind: 'ready',
+        assetIds: readyItems.flatMap(({ assetId }) =>
+          assetId ? [assetId] : [],
+        ),
+      }
     } catch {
       setBatchFailed(true)
       replaceItems(
@@ -96,6 +111,7 @@ export function useProjectPhotoUpload({
           phase: 'failed',
         })),
       )
+      return { kind: 'failed' }
     }
   }
 

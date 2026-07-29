@@ -13,10 +13,6 @@ globalThis.__PHOTOBOOK_MOCK_STORAGE_UPLOAD__ = async ({
   file,
   token,
 }) =>
-  putMockUploadObject(
-    assetId,
-    token,
-    new Uint8Array(await file.arrayBuffer()),
-  )
+  putMockUploadObject(assetId, token, new Uint8Array(await file.arrayBuffer()))
 
 export const mockWorker = setupWorker(...handlers)

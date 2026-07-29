@@ -4,6 +4,8 @@ import type {
   DeliveryMethod,
 } from '@order/model'
 
+import { FieldError } from './FieldError'
+
 interface CheckoutFormProps {
   readonly canSubmit: boolean
   readonly errorMessage: string | null
@@ -58,19 +60,14 @@ export function CheckoutForm({
             autoComplete="name"
             className={fieldClassName}
             id="checkout-name"
+            minLength={2}
             name="name"
+            required
             type="text"
             value={form.name}
             onChange={(event) => onChange('name', event.currentTarget.value)}
           />
-          {errors.name && (
-            <span
-              className="mt-2 block text-xs text-danger"
-              id="checkout-name-error"
-            >
-              {errors.name}
-            </span>
-          )}
+          <FieldError id="checkout-name-error" message={errors.name} />
         </label>
         <label className="text-sm font-semibold">
           Телефон
@@ -83,23 +80,19 @@ export function CheckoutForm({
             inputMode="tel"
             name="phone"
             placeholder="+996 555 123 456"
+            required
             type="tel"
             value={form.phone}
             onChange={(event) => onChange('phone', event.currentTarget.value)}
           />
-          {errors.phone && (
-            <span
-              className="mt-2 block text-xs text-danger"
-              id="checkout-phone-error"
-            >
-              {errors.phone}
-            </span>
-          )}
+          <FieldError id="checkout-phone-error" message={errors.phone} />
         </label>
       </div>
 
       <fieldset className="mt-7">
-        <legend className="text-sm font-semibold">Как получить в Бишкеке</legend>
+        <legend className="text-sm font-semibold">
+          Как получить в Бишкеке
+        </legend>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           {deliveryOptions.map(([method, label, description]) => (
             <label
@@ -137,19 +130,14 @@ export function CheckoutForm({
             autoComplete="street-address"
             className={fieldClassName}
             id="checkout-address"
+            minLength={5}
             name="address"
+            required
             type="text"
             value={form.address}
             onChange={(event) => onChange('address', event.currentTarget.value)}
           />
-          {errors.address && (
-            <span
-              className="mt-2 block text-xs text-danger"
-              id="checkout-address-error"
-            >
-              {errors.address}
-            </span>
-          )}
+          <FieldError id="checkout-address-error" message={errors.address} />
         </label>
       )}
 
@@ -172,6 +160,7 @@ export function CheckoutForm({
             checked={form.approvedLayoutConfirmed}
             className="mt-0.5 size-5 shrink-0 accent-ink-950"
             name="approvedLayoutConfirmed"
+            required
             type="checkbox"
             onChange={(event) =>
               onChange('approvedLayoutConfirmed', event.currentTarget.checked)
@@ -184,6 +173,7 @@ export function CheckoutForm({
             checked={form.mockConditionsAcknowledged}
             className="mt-0.5 size-5 shrink-0 accent-ink-950"
             name="mockConditionsAcknowledged"
+            required
             type="checkbox"
             onChange={(event) =>
               onChange(
