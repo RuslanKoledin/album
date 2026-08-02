@@ -40,7 +40,7 @@ export const getProjectAssetsHandler = http.get(
     )
     const items = [
       ...getSeededAssetFixtures(assetIds),
-      ...getMockProjectAssets(projectId),
+      ...(await getMockProjectAssets(projectId)),
     ]
 
     return HttpResponse.json({ items })

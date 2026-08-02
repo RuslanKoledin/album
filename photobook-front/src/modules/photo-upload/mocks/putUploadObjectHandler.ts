@@ -11,7 +11,11 @@ export const putUploadObjectHandler = http.put(
     const bytes = new Uint8Array(await request.arrayBuffer())
     await delay(MOCK_STORAGE_DELAY_MS)
     const token = new URL(request.url).searchParams.get('token')
-    const result = putMockUploadObject(String(params.assetId), token, bytes)
+    const result = await putMockUploadObject(
+      String(params.assetId),
+      token,
+      bytes,
+    )
 
     if (result.kind === 'not_found')
       return new HttpResponse(null, { status: 404 })

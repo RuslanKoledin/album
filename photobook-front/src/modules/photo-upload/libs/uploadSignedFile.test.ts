@@ -19,7 +19,7 @@ describe('uploadSignedFile', () => {
       file,
       token,
     }) =>
-      putMockUploadObject(
+      await putMockUploadObject(
         assetId,
         token,
         new Uint8Array(await file.arrayBuffer()),
@@ -74,11 +74,13 @@ describe('uploadSignedFile', () => {
     expect(completed.kind).toBe('success')
     if (completed.kind !== 'success') return
 
-    expect(getMockProjectAssets('mock-project-01')).toEqual([completed.value])
+    expect(await getMockProjectAssets('mock-project-01')).toEqual([
+      completed.value,
+    ])
     expect(completed.value.thumbnailUrl).not.toBeNull()
     if (!completed.value.thumbnailUrl) return
     expect(
-      getMockThumbnail(
+      await getMockThumbnail(
         instruction.assetId,
         new URL(completed.value.thumbnailUrl).searchParams.get('token'),
       ),

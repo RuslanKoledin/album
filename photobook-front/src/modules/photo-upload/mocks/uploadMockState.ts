@@ -1,6 +1,13 @@
 import { buildApiUrl } from '@shared/api'
 import { readMockSessionState, writeMockSessionState } from '@mocks/storage'
 
+import {
+  clearMockUploadBytes,
+  getMockUploadBytes,
+  hasMockUploadBytes,
+  putMockUploadBytes,
+} from './uploadMockBlobStorage'
+
 import type {
   AssetDto,
   CompleteAssetUploadRequestDto,
@@ -20,7 +27,6 @@ interface MockUploadAsset {
   expiredOnce: boolean
   rejectedOnce: boolean
   etag: string | null
-  bytes: Uint8Array | null
   completed: AssetDto | null
 }
 
@@ -29,12 +35,10 @@ interface UploadBatchReplay {
   readonly response: CreateUploadBatchResponseDto
 }
 
+type StoredMockUploadAsset = MockUploadAsset & { bytes?: unknown }
+
 let assets = new Map<string, MockUploadAsset>()
 let batchReplays = new Map<string, UploadBatchReplay>()
-
-interface StoredMockUploadAsset extends Omit<MockUploadAsset, 'bytes'> {
-  readonly bytes: number[] | null
-}
 
 interface UploadMockSnapshot {
   readonly assets: [string, StoredMockUploadAsset][]
@@ -52,22 +56,9 @@ const isUploadMockSnapshot = (value: unknown): value is UploadMockSnapshot => {
   return Array.isArray(snapshot.assets) && Array.isArray(snapshot.batchReplays)
 }
 
-const serializeAsset = (asset: MockUploadAsset): StoredMockUploadAsset => ({
-  ...asset,
-  bytes: asset.bytes ? [...asset.bytes] : null,
-})
-
-const deserializeAsset = (asset: StoredMockUploadAsset): MockUploadAsset => ({
-  ...asset,
-  bytes: asset.bytes ? new Uint8Array(asset.bytes) : null,
-})
-
 const persistPhotoUploadMockState = () => {
   writeMockSessionState(UPLOAD_MOCK_STORAGE_KEY, {
-    assets: [...assets.entries()].map(([assetId, asset]) => [
-      assetId,
-      serializeAsset(asset),
-    ]),
+    assets: [...assets.entries()],
     batchReplays: [...batchReplays.entries()],
   } satisfies UploadMockSnapshot)
 }
@@ -79,13 +70,23 @@ const restorePhotoUploadMockState = () => {
     return
   }
 
-  assets = new Map(
-    snapshot.assets.map(([assetId, asset]) => [
-      assetId,
-      deserializeAsset(asset),
-    ]),
-  )
+  snapshot.assets.forEach(([, asset]) => delete asset.bytes)
+  assets = new Map(snapshot.assets)
   batchReplays = new Map(snapshot.batchReplays)
+}
+
+const withoutUnavailableThumbnail = async (
+  asset: MockUploadAsset,
+): Promise<AssetDto> => {
+  if (!asset.completed) return createPendingAsset(asset)
+  if (await hasMockUploadBytes(asset.assetId)) return asset.completed
+
+  return {
+    ...asset.completed,
+    status: 'uploaded',
+    thumbnailUrl: null,
+    thumbnailExpiresAt: null,
+  }
 }
 
 const createUploadUrl = (assetId: string, token: string) => {
@@ -137,6 +138,7 @@ export function resetPhotoUploadMockState() {
   assets = new Map()
   batchReplays = new Map()
   persistPhotoUploadMockState()
+  void clearMockUploadBytes()
 }
 
 export function createMockUploadBatch(
@@ -165,7 +167,6 @@ export function createMockUploadBatch(
       expiredOnce: false,
       rejectedOnce: false,
       etag: null,
-      bytes: null,
       completed: null,
     }
     assets.set(asset.assetId, asset)
@@ -183,7 +184,7 @@ export function createMockUploadBatch(
   return { kind: 'success' as const, value: clone(response) }
 }
 
-export function putMockUploadObject(
+export async function putMockUploadObject(
   assetId: string,
   token: string | null,
   bytes: Uint8Array,
@@ -212,7 +213,7 @@ export function putMockUploadObject(
   }
 
   asset.etag = `mock-etag-${asset.assetId}-${asset.renewCount}`
-  asset.bytes = bytes.slice()
+  await putMockUploadBytes(assetId, bytes)
   persistPhotoUploadMockState()
   return { kind: 'success' as const, etag: asset.etag }
 }
@@ -264,21 +265,25 @@ export function completeMockUpload(
   return { kind: 'success' as const, value: clone(asset.completed) }
 }
 
-export function getMockProjectAssets(projectId: string) {
-  return clone(
+export async function getMockProjectAssets(projectId: string) {
+  const projectAssets = await Promise.all(
     [...assets.values()]
       .filter((asset) => asset.projectId === projectId)
-      .map((asset) => asset.completed ?? createPendingAsset(asset)),
+      .map(withoutUnavailableThumbnail),
   )
+
+  return clone(projectAssets)
 }
 
-export function getMockThumbnail(assetId: string, token: string | null) {
+export async function getMockThumbnail(assetId: string, token: string | null) {
   const asset = assets.get(assetId)
-  if (!asset?.completed || !asset.bytes) return undefined
+  if (!asset?.completed) return undefined
   if (asset.thumbnailToken !== token) return undefined
+  const bytes = await getMockUploadBytes(assetId)
+  if (!bytes) return undefined
 
   return {
-    bytes: asset.bytes.slice(),
+    bytes,
     mediaType: asset.descriptor.mediaType,
   }
 }

@@ -13,7 +13,7 @@ import {
 describe('photo upload mock lifecycle', () => {
   beforeEach(resetPhotoUploadMockState)
 
-  it('keeps the asset identity while an expired instruction is renewed', () => {
+  it('keeps the asset identity while an expired instruction is renewed', async () => {
     const request = {
       files: [
         {
@@ -38,9 +38,9 @@ describe('photo upload mock lifecycle', () => {
     if (!instruction) return
     const token = new URL(instruction.uploadUrl).searchParams.get('token')
     const bytes = new Uint8Array([1, 2, 3, 4])
-    expect(putMockUploadObject(instruction.assetId, token, bytes).kind).toBe(
-      'expired',
-    )
+    expect(
+      (await putMockUploadObject(instruction.assetId, token, bytes)).kind,
+    ).toBe('expired')
 
     const renewed = renewMockUpload('mock-project-01', instruction.assetId)
     expect(renewed.kind).toBe('success')
@@ -48,7 +48,7 @@ describe('photo upload mock lifecycle', () => {
     const renewedToken = new URL(renewed.value.uploadUrl).searchParams.get(
       'token',
     )
-    const uploaded = putMockUploadObject(
+    const uploaded = await putMockUploadObject(
       instruction.assetId,
       renewedToken,
       bytes,
@@ -66,11 +66,13 @@ describe('photo upload mock lifecycle', () => {
       value: { assetId: instruction.assetId, status: 'ready' },
     })
     if (completed.kind !== 'success') return
-    expect(getMockProjectAssets('mock-project-01')).toEqual([completed.value])
+    expect(await getMockProjectAssets('mock-project-01')).toEqual([
+      completed.value,
+    ])
     expect(completed.value.thumbnailUrl).not.toBeNull()
     if (!completed.value.thumbnailUrl) return
     expect(
-      getMockThumbnail(
+      await getMockThumbnail(
         instruction.assetId,
         new URL(completed.value.thumbnailUrl).searchParams.get('token'),
       ),

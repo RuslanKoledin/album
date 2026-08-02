@@ -35,7 +35,7 @@ describe('photo upload mock persistence', () => {
 
     const bytes = new Uint8Array([1, 2, 3, 4])
     const token = new URL(instruction.uploadUrl).searchParams.get('token')
-    const uploaded = uploadState.putMockUploadObject(
+    const uploaded = await uploadState.putMockUploadObject(
       instruction.assetId,
       token,
       bytes,
@@ -54,14 +54,14 @@ describe('photo upload mock persistence', () => {
     vi.resetModules()
     const restoredUploadState = await import('./uploadMockState')
 
-    expect(restoredUploadState.getMockProjectAssets('mock-project-01')).toEqual(
-      [completed.value],
-    )
+    expect(
+      await restoredUploadState.getMockProjectAssets('mock-project-01'),
+    ).toEqual([completed.value])
     expect(completed.value.thumbnailUrl).not.toBeNull()
     if (!completed.value.thumbnailUrl) return
 
     expect(
-      restoredUploadState.getMockThumbnail(
+      await restoredUploadState.getMockThumbnail(
         instruction.assetId,
         new URL(completed.value.thumbnailUrl).searchParams.get('token'),
       ),

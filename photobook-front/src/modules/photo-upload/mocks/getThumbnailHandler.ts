@@ -6,9 +6,9 @@ import { getMockThumbnail } from './uploadMockState'
 
 export const getThumbnailHandler = http.get(
   buildApiUrl('/mock-storage/thumbnails/:assetId'),
-  ({ params, request }) => {
+  async ({ params, request }) => {
     const token = new URL(request.url).searchParams.get('token')
-    const thumbnail = getMockThumbnail(String(params.assetId), token)
+    const thumbnail = await getMockThumbnail(String(params.assetId), token)
 
     if (!thumbnail) return new HttpResponse(null, { status: 404 })
 
