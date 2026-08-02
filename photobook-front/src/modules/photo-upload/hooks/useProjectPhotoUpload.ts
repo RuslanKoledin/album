@@ -3,6 +3,7 @@ import { useRef, useState } from 'react'
 import { useCreateUploadBatchMutation } from '@photo-upload/api'
 import { createUploadBatchRequest, runUploadPool } from '@photo-upload/libs'
 import type { LocalPhotoPreview, PhotoUploadItem } from '@photo-upload/model'
+import { createClientId } from '@shared/lib'
 
 import { useSignedPhotoUpload } from './useSignedPhotoUpload'
 
@@ -65,7 +66,7 @@ export function useProjectPhotoUpload({
     if (idempotency.current?.fingerprint !== fingerprint) {
       idempotency.current = {
         fingerprint,
-        key: globalThis.crypto.randomUUID(),
+        key: createClientId('upload-batch'),
       }
     }
 

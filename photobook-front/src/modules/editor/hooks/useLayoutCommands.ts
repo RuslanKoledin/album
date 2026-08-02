@@ -9,6 +9,7 @@ import {
 
 import type { PhotoAdjustmentPreview } from '@editor/libs'
 import { editorActions } from '@editor/model'
+import { createClientId } from '@shared/lib'
 
 interface UseLayoutCommandsInput {
   readonly activeSurfaceId: string
@@ -20,7 +21,7 @@ interface UseLayoutCommandsInput {
 }
 
 const createLayoutEntityId = (kind: 'photo-slot' | 'text-block') =>
-  `${kind}-${crypto.randomUUID()}`
+  createClientId(kind)
 
 export const useLayoutCommands = ({
   activeSurfaceId,

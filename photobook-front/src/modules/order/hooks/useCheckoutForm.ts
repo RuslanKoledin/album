@@ -9,6 +9,7 @@ import {
   useCreatePriceQuoteQuery,
 } from '@modules/pricing'
 import { useOnlineStatus } from '@shared/hooks'
+import { createClientId } from '@shared/lib'
 
 import { useCreateOrderMutation } from '@order/api'
 import {
@@ -114,7 +115,7 @@ export const useCheckoutForm = (projectId: string) => {
     if (retryIdentity.current?.fingerprint !== fingerprint) {
       retryIdentity.current = {
         fingerprint,
-        key: `mock-order-${crypto.randomUUID()}`,
+        key: createClientId('mock-order'),
       }
     }
 

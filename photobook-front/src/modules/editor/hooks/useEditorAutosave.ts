@@ -12,6 +12,7 @@ import {
 import { useSaveProjectDocumentMutation } from '@modules/project'
 import { getCsrfToken } from '@shared/api'
 import { useOnlineStatus } from '@shared/hooks'
+import { createClientId } from '@shared/lib'
 
 export const useEditorAutosave = (
   editor: EditorState,
@@ -79,7 +80,7 @@ export const useEditorAutosave = (
 
     const timeoutId = window.setTimeout(() => {
       const csrfToken = getCsrfToken()
-      const clientMutationId = crypto.randomUUID()
+      const clientMutationId = createClientId('autosave')
 
       dispatch(
         editorActions.saveStarted({

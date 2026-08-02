@@ -8,6 +8,7 @@ import type {
 
 import { createSpreadDraft, type PhotoAdjustmentPreview } from '@editor/libs'
 import { editorActions } from '@editor/model'
+import { createClientId } from '@shared/lib'
 
 interface UseSpreadCommandsInput {
   readonly activeSurfaceId: string
@@ -19,7 +20,7 @@ interface UseSpreadCommandsInput {
 }
 
 const createEditorEntityId = (kind: 'spread' | 'photo-slot' | 'text-block') =>
-  `${kind}-${crypto.randomUUID()}`
+  createClientId(kind)
 
 export const useSpreadCommands = ({
   activeSurfaceId,

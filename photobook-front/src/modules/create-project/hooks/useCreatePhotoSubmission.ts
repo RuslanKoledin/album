@@ -14,6 +14,7 @@ import {
   useProjectPhotoUpload,
   type LocalPhotoPreview,
 } from '@modules/photo-upload'
+import { createClientId } from '@shared/lib'
 
 import type { CreateProjectSelection } from '@create-project/model'
 
@@ -61,7 +62,7 @@ export function useCreatePhotoSubmission({
     if (saveIdentity.current?.fingerprint !== fingerprint) {
       saveIdentity.current = {
         fingerprint,
-        key: globalThis.crypto.randomUUID(),
+        key: createClientId('project-document-save'),
       }
     }
 

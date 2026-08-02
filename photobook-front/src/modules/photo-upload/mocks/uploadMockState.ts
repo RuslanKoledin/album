@@ -1,4 +1,5 @@
 import { buildApiUrl } from '@shared/api'
+import { readMockSessionState, writeMockSessionState } from '@mocks/storage'
 
 import type {
   AssetDto,
@@ -31,8 +32,61 @@ interface UploadBatchReplay {
 let assets = new Map<string, MockUploadAsset>()
 let batchReplays = new Map<string, UploadBatchReplay>()
 
+interface StoredMockUploadAsset extends Omit<MockUploadAsset, 'bytes'> {
+  readonly bytes: number[] | null
+}
+
+interface UploadMockSnapshot {
+  readonly assets: [string, StoredMockUploadAsset][]
+  readonly batchReplays: [string, UploadBatchReplay][]
+}
+
 const clone = <T>(value: T): T => structuredClone(value)
 const fingerprint = (value: unknown) => JSON.stringify(value)
+const UPLOAD_MOCK_STORAGE_KEY = 'photobook:mock:uploads:v1'
+
+const isUploadMockSnapshot = (value: unknown): value is UploadMockSnapshot => {
+  if (!value || typeof value !== 'object') return false
+  const snapshot = value as Record<string, unknown>
+
+  return Array.isArray(snapshot.assets) && Array.isArray(snapshot.batchReplays)
+}
+
+const serializeAsset = (asset: MockUploadAsset): StoredMockUploadAsset => ({
+  ...asset,
+  bytes: asset.bytes ? [...asset.bytes] : null,
+})
+
+const deserializeAsset = (asset: StoredMockUploadAsset): MockUploadAsset => ({
+  ...asset,
+  bytes: asset.bytes ? new Uint8Array(asset.bytes) : null,
+})
+
+const persistPhotoUploadMockState = () => {
+  writeMockSessionState(UPLOAD_MOCK_STORAGE_KEY, {
+    assets: [...assets.entries()].map(([assetId, asset]) => [
+      assetId,
+      serializeAsset(asset),
+    ]),
+    batchReplays: [...batchReplays.entries()],
+  } satisfies UploadMockSnapshot)
+}
+
+const restorePhotoUploadMockState = () => {
+  const snapshot = readMockSessionState(UPLOAD_MOCK_STORAGE_KEY)
+  if (!isUploadMockSnapshot(snapshot)) {
+    resetPhotoUploadMockState()
+    return
+  }
+
+  assets = new Map(
+    snapshot.assets.map(([assetId, asset]) => [
+      assetId,
+      deserializeAsset(asset),
+    ]),
+  )
+  batchReplays = new Map(snapshot.batchReplays)
+}
 
 const createUploadUrl = (assetId: string, token: string) => {
   const base =
@@ -82,6 +136,7 @@ const createInstruction = (asset: MockUploadAsset): UploadInstructionDto => ({
 export function resetPhotoUploadMockState() {
   assets = new Map()
   batchReplays = new Map()
+  persistPhotoUploadMockState()
 }
 
 export function createMockUploadBatch(
@@ -124,6 +179,7 @@ export function createMockUploadBatch(
     fingerprint: requestFingerprint,
     response,
   })
+  persistPhotoUploadMockState()
   return { kind: 'success' as const, value: clone(response) }
 }
 
@@ -140,6 +196,7 @@ export function putMockUploadObject(
     !asset.expiredOnce
   ) {
     asset.expiredOnce = true
+    persistPhotoUploadMockState()
     return { kind: 'expired' as const }
   }
   if (
@@ -147,6 +204,7 @@ export function putMockUploadObject(
     !asset.rejectedOnce
   ) {
     asset.rejectedOnce = true
+    persistPhotoUploadMockState()
     return { kind: 'rejected' as const }
   }
   if (asset.descriptor.sizeBytes !== bytes.byteLength) {
@@ -155,6 +213,7 @@ export function putMockUploadObject(
 
   asset.etag = `mock-etag-${asset.assetId}-${asset.renewCount}`
   asset.bytes = bytes.slice()
+  persistPhotoUploadMockState()
   return { kind: 'success' as const, etag: asset.etag }
 }
 
@@ -166,6 +225,7 @@ export function renewMockUpload(projectId: string, assetId: string) {
 
   asset.renewCount += 1
   asset.token = `mock-upload-token-${assetId}-${asset.renewCount}`
+  persistPhotoUploadMockState()
   return { kind: 'success' as const, value: clone(createInstruction(asset)) }
 }
 
@@ -200,6 +260,7 @@ export function completeMockUpload(
     thumbnailExpiresAt: '2026-07-22T09:20:00Z',
     createdAt: '2026-07-22T08:40:00Z',
   }
+  persistPhotoUploadMockState()
   return { kind: 'success' as const, value: clone(asset.completed) }
 }
 
@@ -222,4 +283,4 @@ export function getMockThumbnail(assetId: string, token: string | null) {
   }
 }
 
-resetPhotoUploadMockState()
+restorePhotoUploadMockState()

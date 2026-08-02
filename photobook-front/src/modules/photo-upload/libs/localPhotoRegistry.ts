@@ -1,4 +1,5 @@
 import type { LocalPhotoPreview } from '@photo-upload/model'
+import { createClientId } from '@shared/lib'
 
 import {
   getLocalPhotoMediaType,
@@ -28,7 +29,7 @@ export const createLocalPhotoRegistry = () => {
       const mediaType = getLocalPhotoMediaType(file)
       if (!mediaType) return null
 
-      const id = globalThis.crypto.randomUUID()
+      const id = createClientId('local-photo')
       const preview: LocalPhotoPreview = {
         fileName: file.name,
         id,

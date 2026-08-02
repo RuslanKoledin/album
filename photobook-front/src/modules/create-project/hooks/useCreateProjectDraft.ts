@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react'
 
 import { useCreateProjectMutation } from '@modules/project'
 import { useOnlineStatus } from '@shared/hooks'
+import { createClientId } from '@shared/lib'
 
 import {
   getCreateProjectFailure,
@@ -44,7 +45,7 @@ export function useCreateProjectDraft({
     if (idempotency.current?.fingerprint !== fingerprint) {
       idempotency.current = {
         fingerprint,
-        key: globalThis.crypto.randomUUID(),
+        key: createClientId('project-create'),
       }
     }
 

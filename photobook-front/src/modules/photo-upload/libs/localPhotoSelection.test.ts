@@ -74,4 +74,30 @@ describe('local photo selection', () => {
     expect(createObjectUrl).toHaveBeenCalledTimes(2)
     expect(revokeObjectUrl).toHaveBeenCalledTimes(2)
   })
+
+  it('keeps accepting photos when randomUUID is unavailable', () => {
+    const originalCrypto = globalThis.crypto
+    Object.defineProperty(globalThis, 'crypto', {
+      configurable: true,
+      value: {
+        getRandomValues: (bytes: Uint8Array) => {
+          bytes.fill(11)
+          return bytes
+        },
+      },
+    })
+
+    try {
+      const registry = createLocalPhotoRegistry()
+      const preview = registry.add(createFile('phone.jpg', 'image/jpeg'))
+
+      expect(preview?.id).toBe('local-photo-0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b')
+      expect(createObjectUrl).toHaveBeenCalledTimes(1)
+    } finally {
+      Object.defineProperty(globalThis, 'crypto', {
+        configurable: true,
+        value: originalCrypto,
+      })
+    }
+  })
 })
