@@ -56,6 +56,36 @@ const isUploadMockSnapshot = (value: unknown): value is UploadMockSnapshot => {
   return Array.isArray(snapshot.assets) && Array.isArray(snapshot.batchReplays)
 }
 
+const normalizeLegacyUploadBytes = (value: unknown) => {
+  if (!Array.isArray(value)) return null
+  if (
+    !value.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255)
+  ) {
+    return null
+  }
+
+  return new Uint8Array(value)
+}
+
+const migrateLegacyUploadBytes = (
+  entries: readonly [string, StoredMockUploadAsset][],
+) => {
+  const migrations = entries.flatMap(([assetId, asset]) => {
+    const bytes = normalizeLegacyUploadBytes(asset.bytes)
+    delete asset.bytes
+
+    return bytes ? [putMockUploadBytes(assetId, bytes)] : []
+  })
+
+  if (migrations.length === 0) return
+
+  void Promise.allSettled(migrations).then((results) => {
+    if (results.every(({ status }) => status === 'fulfilled')) {
+      persistPhotoUploadMockState()
+    }
+  })
+}
+
 const persistPhotoUploadMockState = () => {
   writeMockSessionState(UPLOAD_MOCK_STORAGE_KEY, {
     assets: [...assets.entries()],
@@ -70,7 +100,7 @@ const restorePhotoUploadMockState = () => {
     return
   }
 
-  snapshot.assets.forEach(([, asset]) => delete asset.bytes)
+  migrateLegacyUploadBytes(snapshot.assets)
   assets = new Map(snapshot.assets)
   batchReplays = new Map(snapshot.batchReplays)
 }
