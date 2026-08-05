@@ -9,6 +9,7 @@ import type { AssetDto } from '@modules/photo-upload'
 import { PhotoFocalPointControl } from '@editor-ui/PhotoFocalPointControl'
 import { usePhotoPropertiesPanel } from '@editor/hooks'
 import type { PhotoAdjustmentPreview } from '@editor/libs'
+import { FiPlus } from 'react-icons/fi'
 
 import { PhotoCropControls } from './PhotoCropControls'
 import { PhotoFilterTabs } from './PhotoFilterTabs'
@@ -23,6 +24,7 @@ interface PhotoPropertiesPanelProps {
   readonly assetsLoading: boolean
   readonly commandError: string | null
   readonly document: BookDocumentV1
+  readonly onAddPhotos: () => void
   readonly onApplyCrop: (crop: NormalizedRect) => void
   readonly onAssignPhoto: (assetId: string) => void
   readonly onCommitFocalPoint: (
@@ -42,11 +44,21 @@ export function PhotoPropertiesPanel(props: PhotoPropertiesPanelProps) {
 
   return (
     <div className="mt-5">
-      <div>
-        <h3 className="font-semibold">Фотография</h3>
-        <p className="mt-1 text-xs text-ink-500">
-          Выбранный фотослот на текущей странице
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="font-semibold">Фотография</h3>
+          <p className="mt-1 text-xs text-ink-500">
+            Выбранный фотослот на текущей странице
+          </p>
+        </div>
+        <button
+          className="inline-flex min-h-10 shrink-0 items-center gap-1 rounded-full bg-accent-600 px-3 text-xs font-semibold text-surface transition-colors hover:bg-accent-700"
+          type="button"
+          onClick={props.onAddPhotos}
+        >
+          <FiPlus aria-hidden="true" />
+          Фото
+        </button>
       </div>
       {panel.hasResolutionWarning && panel.effectiveDpi !== null && (
         <PhotoQualityWarning effectiveDpi={panel.effectiveDpi} />

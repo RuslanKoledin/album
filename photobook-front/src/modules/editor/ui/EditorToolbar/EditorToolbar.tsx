@@ -1,5 +1,11 @@
 import { Link } from 'react-router'
-import { LuArrowLeft, LuEye, LuRedo2, LuUndo2 } from 'react-icons/lu'
+import {
+  LuArrowLeft,
+  LuEye,
+  LuImagePlus,
+  LuRedo2,
+  LuUndo2,
+} from 'react-icons/lu'
 
 import {
   EDITOR_SAVE_STATUS_CONTENT,
@@ -11,6 +17,7 @@ import { EditableProjectTitle } from './EditableProjectTitle'
 interface EditorToolbarProps {
   readonly canRedo: boolean
   readonly canUndo: boolean
+  readonly onAddPhotos: () => void
   readonly onRedo: () => void
   readonly onRetrySave: () => void
   readonly onTitleChange: (title: string) => void
@@ -23,6 +30,7 @@ interface EditorToolbarProps {
 export function EditorToolbar({
   canRedo,
   canUndo,
+  onAddPhotos,
   onRedo,
   onRetrySave,
   onTitleChange,
@@ -79,6 +87,15 @@ export function EditorToolbar({
           <LuRedo2 aria-hidden="true" size={20} />
         </button>
       </div>
+
+      <button
+        className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-surface px-3 text-sm font-semibold transition-colors hover:bg-paper-100 sm:px-4"
+        type="button"
+        onClick={onAddPhotos}
+      >
+        <LuImagePlus aria-hidden="true" size={19} />
+        <span className="hidden sm:inline">Фото</span>
+      </button>
 
       {canPreview ? (
         <Link

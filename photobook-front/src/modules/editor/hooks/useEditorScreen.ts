@@ -15,6 +15,10 @@ import {
   type MobileEditorToolAvailability,
 } from '@editor/model'
 import { useGetAuthSessionQuery } from '@modules/auth'
+import {
+  useLocalPhotoSelection,
+  useProjectPhotoUpload,
+} from '@modules/photo-upload'
 
 import { useEditorAutosave } from './useEditorAutosave'
 import { useEditorCommands } from './useEditorCommands'
@@ -29,8 +33,20 @@ export const useEditorScreen = (projectId: string) => {
   const editor = useSelector(selectEditorState)
   const [photoAdjustmentPreview, setPhotoAdjustmentPreview] =
     useState<PhotoAdjustmentPreview | null>(null)
+  const [photoUploadDialogOpen, setPhotoUploadDialogOpen] = useState(false)
+  const [photoUploadFailure, setPhotoUploadFailure] = useState<string | null>(
+    null,
+  )
   const [mobileTool, setMobileTool] = useState<MobileEditorTool>('pages')
   const sessionQuery = useGetAuthSessionQuery()
+  const localPhotos = useLocalPhotoSelection()
+  const csrfToken = sessionQuery.data?.authenticated
+    ? sessionQuery.data.csrfToken
+    : null
+  const upload = useProjectPhotoUpload({
+    csrfToken,
+    getFile: localPhotos.getFile,
+  })
   const queries = useEditorProjectBootstrap(projectId, editor.projectId)
 
   useEditorAutosave(editor, queries.catalogQuery.data)
@@ -84,6 +100,36 @@ export const useEditorScreen = (projectId: string) => {
     selectedTextBlock: selection.selectedTextBlock,
     setPhotoAdjustmentPreview,
   })
+  const confirmPhotoUpload = async () => {
+    setPhotoUploadFailure(null)
+    if (!editor.projectId) {
+      setPhotoUploadFailure('Проект ещё загружается. Повторите через секунду.')
+      return
+    }
+    if (!csrfToken) {
+      setPhotoUploadFailure(
+        'Сессия закончилась. Войдите снова, чтобы добавить фотографии.',
+      )
+      return
+    }
+
+    const result = await upload.start({
+      projectId: editor.projectId,
+      photos: localPhotos.photos,
+    })
+    if (result.kind !== 'ready') {
+      setPhotoUploadFailure(
+        'Не удалось загрузить все фотографии. Проверьте файлы и попробуйте ещё раз.',
+      )
+      return
+    }
+
+    commands.addAssets(result.assetIds)
+    localPhotos.clear()
+    upload.reset()
+    setPhotoUploadDialogOpen(false)
+    void queries.assetQuery.refetch()
+  }
   const spreadCommands = useSpreadCommands({
     activeSurfaceId: editor.activeSurfaceId,
     configuration,
@@ -106,6 +152,35 @@ export const useEditorScreen = (projectId: string) => {
     assets,
     photoSources,
     photoAdjustmentPreview,
+    photoUpload: {
+      error: photoUploadFailure,
+      isOpen: photoUploadDialogOpen,
+      isUploading: upload.isBusy,
+      issues: localPhotos.issues,
+      photos: localPhotos.photos,
+      uploadItems: upload.items,
+      uploadReadyCount: upload.readyCount,
+      addFiles: (files: readonly File[]) => {
+        setPhotoUploadFailure(null)
+        localPhotos.addFiles(files)
+      },
+      clear: () => {
+        setPhotoUploadFailure(null)
+        localPhotos.clear()
+        upload.reset()
+      },
+      close: () => {
+        if (upload.isBusy) return
+        setPhotoUploadDialogOpen(false)
+      },
+      confirm: () => void confirmPhotoUpload(),
+      dismissIssues: localPhotos.clearIssues,
+      open: () => {
+        setPhotoUploadFailure(null)
+        setPhotoUploadDialogOpen(true)
+      },
+      removePhoto: localPhotos.removePhoto,
+    },
     preflight,
     queries,
     selection,

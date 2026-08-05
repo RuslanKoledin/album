@@ -218,6 +218,43 @@ describe('BookCommand', () => {
     expect(initial.spreads[0]?.photoSlots[0]).toEqual(initialSpreadPhoto)
   })
 
+  it('adds uploaded assets to the project library once', () => {
+    const initial = createMinimalBookDocumentV1Fixture()
+    const withUploads = getDocument(
+      apply(initial, {
+        type: 'add_assets',
+        assetIds: [
+          'mock-upload-asset-1',
+          'mock-upload-asset-2',
+          'mock-asset-cover',
+        ],
+      }),
+    )
+    const withoutDuplicates = getDocument(
+      apply(withUploads, {
+        type: 'add_assets',
+        assetIds: ['mock-upload-asset-1', 'mock-upload-asset-3'],
+      }),
+    )
+
+    expect(withUploads.assets.slice(-2)).toEqual([
+      { assetId: 'mock-upload-asset-1' },
+      { assetId: 'mock-upload-asset-2' },
+    ])
+    expect(
+      withoutDuplicates.assets.filter(({ assetId }) =>
+        assetId.startsWith('mock-upload-asset'),
+      ),
+    ).toEqual([
+      { assetId: 'mock-upload-asset-1' },
+      { assetId: 'mock-upload-asset-2' },
+      { assetId: 'mock-upload-asset-3' },
+    ])
+    expect(
+      initial.assets.some(({ assetId }) => assetId === 'mock-upload-asset-1'),
+    ).toBe(false)
+  })
+
   it('keeps an incomplete draft editable and reports missing required content', () => {
     const initial = createMinimalBookDocumentV1Fixture()
     const requiredPhotoId = initial.spreads[0]?.photoSlots[0]?.id

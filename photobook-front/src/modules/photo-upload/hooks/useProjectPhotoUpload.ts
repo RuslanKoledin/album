@@ -44,6 +44,12 @@ export function useProjectPhotoUpload({
     itemsRef.current = next
     setItems(next)
   }
+  const reset = () => {
+    idempotency.current = null
+    setBatchFailed(false)
+    setProjectId(null)
+    replaceItems([])
+  }
   const updateItem = (localPhotoId: string, update: Partial<PhotoUploadItem>) =>
     replaceItems(
       itemsRef.current.map((item) =>
@@ -138,6 +144,7 @@ export function useProjectPhotoUpload({
     projectId,
     readyCount,
     retry,
+    reset,
     start,
   }
 }

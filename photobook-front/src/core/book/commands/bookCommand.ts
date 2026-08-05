@@ -9,6 +9,7 @@ import type {
 
 export const BOOK_COMMAND_TYPES = [
   'set_book_title',
+  'add_assets',
   'set_cover_option',
   'set_spread_layout',
   'assign_photo',
@@ -28,6 +29,10 @@ export type BookCommand =
   | {
       readonly type: 'set_book_title'
       readonly title: string
+    }
+  | {
+      readonly type: 'add_assets'
+      readonly assetIds: readonly OpaqueId[]
     }
   | {
       readonly type: 'set_cover_option'

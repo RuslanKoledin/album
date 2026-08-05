@@ -3,6 +3,7 @@ import { canRedoBookHistory, canUndoBookHistory } from '@core/book'
 import { LocalPreflightSummary } from '@modules/preflight'
 
 import { EditorCanvas } from '@editor-ui/EditorCanvas'
+import { EditorPhotoUploadDialog } from '@editor-ui/EditorPhotoUploadDialog'
 import { EditorToolbar } from '@editor-ui/EditorToolbar'
 import { MobileEditorToolbar } from '@editor-ui/MobileEditorToolbar'
 import { PagesRail } from '@editor-ui/PagesRail'
@@ -71,6 +72,7 @@ export function EditorScreen({ projectId }: EditorScreenProps) {
         projectTitle={screen.document.metadata.title}
         projectId={projectId}
         saveStatus={screen.editor.saveStatus}
+        onAddPhotos={screen.photoUpload.open}
         onRedo={screen.redo}
         onRetrySave={screen.recoverSave}
         onTitleChange={screen.commands.setBookTitle}
@@ -135,6 +137,7 @@ export function EditorScreen({ projectId }: EditorScreenProps) {
           selectedTextBlock={screen.selection.selectedTextBlock}
           selectedTextSlot={screen.selectedTextSlot}
           selectedTextStyle={screen.selectedTextStyle}
+          onAddPhotos={screen.photoUpload.open}
           onCloseMobile={screen.closeMobileProperties}
           onApplyCrop={screen.commands.applyCrop}
           onApplyLayout={screen.layoutCommands.apply}
@@ -153,6 +156,21 @@ export function EditorScreen({ projectId }: EditorScreenProps) {
           onSelectTool={screen.selectMobileTool}
         />
       </div>
+      <EditorPhotoUploadDialog
+        error={screen.photoUpload.error}
+        isOpen={screen.photoUpload.isOpen}
+        isUploading={screen.photoUpload.isUploading}
+        issues={screen.photoUpload.issues}
+        photos={screen.photoUpload.photos}
+        uploadItems={screen.photoUpload.uploadItems}
+        uploadReadyCount={screen.photoUpload.uploadReadyCount}
+        onAddFiles={screen.photoUpload.addFiles}
+        onClear={screen.photoUpload.clear}
+        onClose={screen.photoUpload.close}
+        onConfirm={screen.photoUpload.confirm}
+        onDismissIssues={screen.photoUpload.dismissIssues}
+        onRemovePhoto={screen.photoUpload.removePhoto}
+      />
     </div>
   )
 }

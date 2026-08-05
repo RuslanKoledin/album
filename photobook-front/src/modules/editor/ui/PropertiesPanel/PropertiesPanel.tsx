@@ -33,6 +33,7 @@ interface PropertiesPanelProps {
   readonly document: BookDocumentV1
   readonly mobileTool: MobileEditorTool
   readonly mobileVisible: boolean
+  readonly onAddPhotos: () => void
   readonly onCloseMobile: () => void
   readonly onApplyCrop: (crop: NormalizedRect) => void
   readonly onApplyLayout: (layoutId: string) => void
@@ -64,6 +65,7 @@ export function PropertiesPanel({
   document,
   mobileTool,
   mobileVisible,
+  onAddPhotos,
   onCloseMobile,
   onApplyCrop,
   onApplyLayout,
@@ -126,6 +128,7 @@ export function PropertiesPanel({
           document={document}
           key={selectedPhotoSlot.id}
           selectedPhotoSlot={selectedPhotoSlot}
+          onAddPhotos={onAddPhotos}
           onApplyCrop={onApplyCrop}
           onAssignPhoto={onAssignPhoto}
           onCommitFocalPoint={onCommitFocalPoint}

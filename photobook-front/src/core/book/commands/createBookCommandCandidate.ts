@@ -3,6 +3,7 @@ import type { BookDocumentV1 } from '@core/book/model'
 
 import type { BookCommand } from './bookCommand'
 import type { BookCommandCandidateResult } from './bookCommandApplication'
+import { createBookAssetCandidate } from './createBookAssetCandidate'
 import { createBookPhotoCandidate } from './createBookPhotoCandidate'
 import { createBookSettingsCandidate } from './createBookSettingsCandidate'
 import { createBookSpreadCandidate } from './createBookSpreadCandidate'
@@ -14,6 +15,9 @@ export const createBookCommandCandidate = (
   configuration: BookConfigurationBundle,
 ): BookCommandCandidateResult => {
   switch (command.type) {
+    case 'add_assets':
+      return createBookAssetCandidate(document, command)
+
     case 'set_book_title':
     case 'set_cover_option':
     case 'set_spread_layout':

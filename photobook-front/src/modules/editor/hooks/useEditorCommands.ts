@@ -35,6 +35,11 @@ export const useEditorCommands = ({
   }
 
   return {
+    addAssets: (assetIds: readonly string[]) => {
+      if (assetIds.length === 0) return
+      setPhotoAdjustmentPreview(null)
+      commit({ type: 'add_assets', assetIds })
+    },
     applyCrop: (crop: NormalizedRect) => {
       if (!selectedPhotoSlot) return
       commit({

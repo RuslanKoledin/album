@@ -1,5 +1,6 @@
 export * from './BookSurfaceRenderer'
 export * from './EditorCanvas'
+export * from './EditorPhotoUploadDialog'
 export * from './EditorScreen'
 export * from './EditorToolbar'
 export * from './LayoutPropertiesPanel'
