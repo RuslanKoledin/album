@@ -1,4 +1,5 @@
 export * from './bookSurfaceGeometry'
+export * from './createPhotoUploadPlacementCommands'
 export * from './createSpreadDraft'
 export * from './getEditorSaveFailure'
 export * from './getEditorSelection'

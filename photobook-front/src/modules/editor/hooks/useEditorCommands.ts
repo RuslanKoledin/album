@@ -2,17 +2,22 @@ import { useDispatch } from 'react-redux'
 
 import type {
   BookConfigurationBundle,
+  BookDocumentV1,
   NormalizedPoint,
   NormalizedRect,
   PhotoSlot,
   TextBlock,
 } from '@core/book'
 
-import type { PhotoAdjustmentPreview } from '@editor/libs'
+import {
+  createPhotoUploadPlacementCommands,
+  type PhotoAdjustmentPreview,
+} from '@editor/libs'
 import { editorActions } from '@editor/model'
 
 interface UseEditorCommandsInput {
   readonly configuration: BookConfigurationBundle | undefined
+  readonly document: BookDocumentV1 | undefined
   readonly selectedPhotoSlot: PhotoSlot | null
   readonly selectedTextBlock: TextBlock | null
   readonly setPhotoAdjustmentPreview: (
@@ -22,6 +27,7 @@ interface UseEditorCommandsInput {
 
 export const useEditorCommands = ({
   configuration,
+  document,
   selectedPhotoSlot,
   selectedTextBlock,
   setPhotoAdjustmentPreview,
@@ -35,10 +41,19 @@ export const useEditorCommands = ({
   }
 
   return {
-    addAssets: (assetIds: readonly string[]) => {
-      if (assetIds.length === 0) return
+    addAssetsAndFillEmptySlots: (assetIds: readonly string[]) => {
+      if (!configuration || !document || assetIds.length === 0) return
+
+      const commands = createPhotoUploadPlacementCommands(document, assetIds)
+      if (commands.length === 0) return
+
       setPhotoAdjustmentPreview(null)
-      commit({ type: 'add_assets', assetIds })
+      dispatch(
+        editorActions.commandBatchCommitted({
+          commands,
+          configuration,
+        }),
+      )
     },
     applyCrop: (crop: NormalizedRect) => {
       if (!selectedPhotoSlot) return

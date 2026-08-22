@@ -96,6 +96,7 @@ export const useEditorScreen = (projectId: string) => {
   })
   const commands = useEditorCommands({
     configuration,
+    document,
     selectedPhotoSlot: selection.selectedPhotoSlot,
     selectedTextBlock: selection.selectedTextBlock,
     setPhotoAdjustmentPreview,
@@ -124,7 +125,7 @@ export const useEditorScreen = (projectId: string) => {
       return
     }
 
-    commands.addAssets(result.assetIds)
+    commands.addAssetsAndFillEmptySlots(result.assetIds)
     localPhotos.clear()
     upload.reset()
     setPhotoUploadDialogOpen(false)
